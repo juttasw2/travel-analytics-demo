@@ -28,6 +28,8 @@ FILES = [
     "sql/rpc/dashboard_booking_filters.sql",     # reiziger_status_uitgesloten_standaard_dashboards, boeking_id_excluded, vw_actieve_reizigers_per_boeking
     "migrations/20260508110000_restore_compute_kost_transport_rule.sql",  # compute_kost_transport_rule(text, numeric)
     "migrations/20260508113000_enforce_boekingen_cascade_delete.sql",  # all boeking_id FKs -> ON DELETE CASCADE
+    "migrations/20260507195500_reizigers_transport_persistent_unified.sql",  # reizigers.transport (self/bus/plane)
+    "migrations/20260508134500_drop_klantenprofiel_uuid_signatures.sql",  # oude uuid[]-overloads opruimen
 
     # 4. Views (need helper functions above)
     "migrations/excursies_uniek_boekingsprijs_jaarkosten.sql",  # vw_excursie_sales_analysis + excursie_jaarkosten DDL

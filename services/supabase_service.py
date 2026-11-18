@@ -128,12 +128,12 @@ class SupabaseService:
             # Pool wordt slechts éénmaal gemaakt (singleton), dus latere instances
             # erven dezelfde pool-default. Daarom moeten we het PER use overrulen.
             pool_default_ms = max(int(timeout_seconds * 1000), 30_000)
-            SupabaseService._pool = psycopg2.pool.ThreadedConnectionPool(
-                minconn=1,
-                maxconn=10,
-                dsn=dsn,
-                options=f"-c statement_timeout={pool_default_ms}",
-            )
+            pool_kwargs: dict[str, Any] = {"minconn": 1, "maxconn": 10, "dsn": dsn}
+            # PgBouncer-poolers (bv. Neon "-pooler"-host) weigeren startup-opties;
+            # daar vertrouwen we enkel op de per-transactie timeout.
+            if "-pooler" not in dsn and "pgbouncer" not in dsn.lower():
+                pool_kwargs["options"] = f"-c statement_timeout={pool_default_ms}"
+            SupabaseService._pool = psycopg2.pool.ThreadedConnectionPool(**pool_kwargs)
 
     def _apply_statement_timeout(self, cur) -> None:
         """Zet `statement_timeout` voor de huidige transactie (LOCAL).

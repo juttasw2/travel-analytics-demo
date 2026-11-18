@@ -892,29 +892,35 @@ begin
           or (('21+' = any(v_leeftijd_arr)) and t.age_y is not null and t.age_y >= 21)
         )
     ),
+    -- Eerste vertrekdatum per klant over alle (niet-uitgesloten) reizen.
+    -- Een reiziger is herhaalboeker als die klant al eerder vertrok; een
+    -- eerdere vertrekdatum impliceert automatisch een andere boeking.
+    -- (Vervangt een gecorreleerde EXISTS per reiziger: O(n) i.p.v. O(n²).)
+    cust_first_trip as (
+      select
+        md5(
+          lower(trim(coalesce(r2.voornaam, ''))) || '|'
+          || lower(trim(coalesce(r2.achternaam, ''))) || '|'
+          || coalesce(r2.geboortedatum::text, '')
+        ) as cust_key,
+        min(b2.vertrekdatum::date) as first_vd
+      from public.reizigers r2
+      join public.boekingen b2 on b2.id = r2.boeking_id
+      left join public.statussen st2 on st2.id = r2.traveller_status_id
+      where b2.vertrekdatum is not null
+        and not public.boeking_id_excluded_from_standard_dashboards(b2.id)
+        and not public.reiziger_status_uitgesloten_standaard_dashboards(st2.naam)
+      group by 1
+    ),
     loyalty_cur as (
       select
         t.rid,
         t.bid,
         t.vd,
         t.cust_key,
-        exists (
-          select 1
-          from public.reizigers r2
-          join public.boekingen b2 on b2.id = r2.boeking_id
-          left join public.statussen st2 on st2.id = r2.traveller_status_id
-          where b2.vertrekdatum is not null
-            and not public.boeking_id_excluded_from_standard_dashboards(b2.id)
-            and not public.reiziger_status_uitgesloten_standaard_dashboards(st2.naam)
-            and md5(
-              lower(trim(coalesce(r2.voornaam, ''))) || '|'
-              || lower(trim(coalesce(r2.achternaam, ''))) || '|'
-              || coalesce(r2.geboortedatum::text, '')
-            ) = t.cust_key
-            and b2.vertrekdatum::date < t.vd
-            and b2.id <> t.bid
-        ) as is_repeat
+        coalesce(cft.first_vd < t.vd, false) as is_repeat
       from travelers_f t
+      left join cust_first_trip cft on cft.cust_key = t.cust_key
     ),
     loyalty_scope as (
       select

@@ -433,7 +433,7 @@ def index() -> str:
     """
     Root route – redirect naar de hoofd upload pagina.
     """
-    return redirect(url_for("dashboard.upload"))
+    return redirect(url_for("dashboard.overzicht" if current_app.config.get("DEMO_MODE") else "dashboard.upload"))
 
 
 register_upload_routes(

@@ -61,7 +61,7 @@ def register_auth_routes(
             return redirect(url_for("dashboard.pending_access"))
         if safe_next:
             return redirect(safe_next)
-        return redirect(url_for("dashboard.upload"))
+        return redirect(url_for("dashboard.overzicht" if current_app.config.get("DEMO_MODE") else "dashboard.upload"))
 
     @bp.route("/login", methods=["GET", "POST"])
     def login() -> str | Response:
@@ -71,7 +71,7 @@ def register_auth_routes(
                     sn = safe_relative_redirect_path(request.args.get("next"))
                     if sn:
                         return redirect(sn)
-                    return redirect(url_for("dashboard.upload"))
+                    return redirect(url_for("dashboard.overzicht" if current_app.config.get("DEMO_MODE") else "dashboard.upload"))
                 return redirect(url_for("dashboard.pending_access"))
             next_path = (request.args.get("next") or "").strip()
             return render_template("auth/login.html", next_path=next_path)
@@ -464,7 +464,7 @@ def register_auth_routes(
         if not session.get("user_id"):
             return redirect(url_for("dashboard.login", next=request.path))
         if session_user_has_access_effective():
-            return redirect(url_for("dashboard.upload"))
+            return redirect(url_for("dashboard.overzicht" if current_app.config.get("DEMO_MODE") else "dashboard.upload"))
         return render_template("auth/no_access.html")
 
     @bp.route("/logout", methods=["POST"])

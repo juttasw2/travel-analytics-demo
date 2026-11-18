@@ -253,6 +253,7 @@ def generate(seed: int = 42) -> dict[int, dict[str, pd.DataFrame]]:
                 bus_stop = rng.choice(BUS_STOPS[land]) if transport == "bus" else None
                 base = dest.base_price * (1 + (year - 2026) * 0.04) * (nights / max(dest.nights))
 
+                first_row = len(rows)
                 for t in range(pax):
                     gender = rng.choice(("M", "V"))
                     first = rng.choice(FIRST_NAMES[gender])
@@ -369,6 +370,11 @@ def generate(seed: int = 42) -> dict[int, dict[str, pd.DataFrame]]:
                         "Invoice sent on": fmt(booked_on + timedelta(days=1)),
                         "Exclude from communications": "no",
                     })
+
+                # 'Advance' is in de export een boekingsveld: zelfde waarde op elke reizigersrij.
+                booking_advance = money(sum(row["Totaal to pay"] for row in rows[first_row:]) * 0.30)
+                for row in rows[first_row:]:
+                    row["Advance"] = booking_advance
 
                 if transport == "plane":
                     airline, code = rng.choice(AIRLINES)
