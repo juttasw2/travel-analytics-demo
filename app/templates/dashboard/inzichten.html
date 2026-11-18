@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Inzichten · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/inzichten.css') }}?v=insights-v2" />
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 insights-page" id="insightsPage">
+  <div id="insightsError" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+  <header class="mb-4">
+    <h1 class="page-title">Inzichten</h1>
+    <p class="page-subtitle mb-0">
+      Signalen en opportuniteiten op basis van boekingen, omzet, winst, annulaties en marges.
+    </p>
+  </header>
+
+  <div class="insights-subtabs card border-0 shadow-sm mb-4">
+    <div class="card-body p-2 p-md-3">
+      <ul class="nav nav-pills flex-wrap gap-1 insights-main-tabs" id="insightsMainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="insTabAlerts" data-bs-toggle="pill" data-bs-target="#insPaneAlerts" type="button" role="tab" aria-controls="insPaneAlerts" aria-selected="true">Alerts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="insTabGoal" data-bs-toggle="pill" data-bs-target="#insPaneGoal" type="button" role="tab" aria-controls="insPaneGoal" aria-selected="false">Goal setting</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="insTabMarket" data-bs-toggle="pill" data-bs-target="#insPaneMarket" type="button" role="tab" aria-controls="insPaneMarket" aria-selected="false">Markt analyse</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="insTabProfitBuild" data-bs-toggle="pill" data-bs-target="#insPaneProfitBuild" type="button" role="tab" aria-controls="insPaneProfitBuild" aria-selected="false">Winst opbouw</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="insTabLosses" data-bs-toggle="pill" data-bs-target="#insPaneLosses" type="button" role="tab" aria-controls="insPaneLosses" aria-selected="false">Verliezen</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="insTabEvolutions" data-bs-toggle="pill" data-bs-target="#insPaneEvolutions" type="button" role="tab" aria-controls="insPaneEvolutions" aria-selected="false">Evoluties</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-content insights-tab-panels" id="insightsMainTabContent">
+    <div class="tab-pane fade show active" id="insPaneAlerts" role="tabpanel" aria-labelledby="insTabAlerts" tabindex="0">
+      <div id="insightsAlertsEmpty" class="card border-0 shadow-sm d-none">
+        <div class="card-body py-4 text-center text-muted">
+          Geen opvallende signalen gevonden binnen deze selectie.
+        </div>
+      </div>
+      <div class="insights-alert-grid" id="insightsAlertsGrid"></div>
+    </div>
+
+    <div class="tab-pane fade" id="insPaneGoal" role="tabpanel" aria-labelledby="insTabGoal" tabindex="0">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-2">Goal setting</h2>
+          <p class="text-muted mb-0">Binnenkort beschikbaar</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="insPaneMarket" role="tabpanel" aria-labelledby="insTabMarket" tabindex="0">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-2">Markt analyse</h2>
+          <p class="text-muted mb-0">Binnenkort beschikbaar</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="insPaneProfitBuild" role="tabpanel" aria-labelledby="insTabProfitBuild" tabindex="0">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-2">Winst opbouw</h2>
+          <p class="text-muted mb-0">Binnenkort beschikbaar</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="insPaneLosses" role="tabpanel" aria-labelledby="insTabLosses" tabindex="0">
+      <section id="insLossesSection">
+        <div id="insLossesEmpty" class="card border-0 shadow-sm d-none mb-3">
+          <div class="card-body py-4 text-center text-muted">
+            Geen verlieslatende boekingen gevonden voor deze filters.
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+              <div class="info-popover-block ins-loss-title-wrap">
+                <div class="info-popover-head">
+                  <h2 class="h5 mb-1">Verlieslatende boekingen</h2>
+                  <p class="text-muted mb-0 small">Analyse met nadruk op verlies per persoon, aangevuld met totale verliezen en kostenopbouw.</p>
+                </div>
+                <button
+                  type="button"
+                  class="info-popover-trigger"
+                  data-info-popover-trigger="ins-losses-info"
+                  aria-controls="ins-losses-info"
+                  aria-expanded="false"
+                  aria-label="Toon uitleg over verliesanalyse"
+                >
+                  i
+                </button>
+                <div id="ins-losses-info" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+                  <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+                  <p class="info-popover-text">
+                    Hier zie je welke boekingen verlieslatend zijn. De bedragen worden vooral per persoon getoond, zodat boekingen met verschillende aantallen reizigers eerlijker vergelijkbaar zijn. Je ziet ook welke kostenpost, zoals accommodatie of transport, het grootste aandeel heeft in het verlies.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-2 g-md-3">
+              <div class="col-12 col-md-6 col-xl-3">
+                <label for="insLossBrand" class="form-label mb-1">Brand</label>
+                <select id="insLossBrand" class="form-select form-select-sm"><option value="__all__">Alle brands</option></select>
+              </div>
+              <div class="col-12 col-md-6 col-xl-3">
+                <label for="insLossDestination" class="form-label mb-1">Bestemming</label>
+                <select id="insLossDestination" class="form-select form-select-sm"><option value="">Alle bestemmingen</option></select>
+              </div>
+              <div class="col-12 col-md-6 col-xl-3">
+                <label for="insLossTransport" class="form-label mb-1">Transport</label>
+                <select id="insLossTransport" class="form-select form-select-sm"><option value="">Alle transporten</option></select>
+              </div>
+              <div class="col-12 col-md-6 col-xl-3">
+                <label for="insLossYear" class="form-label mb-1">Jaar</label>
+                <select id="insLossYear" class="form-select form-select-sm"><option value="0">Alle jaren</option></select>
+              </div>
+              <div class="col-12 col-xl-3 d-flex align-items-end gap-2">
+                <button id="insLossApply" class="btn btn-overzicht-apply btn-sm w-100" type="button">Toepassen</button>
+                <button id="insLossReset" class="btn btn-overzicht-secondary btn-sm w-100" type="button">Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3" id="insLossKpis">
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Verliesboekingen</p><p class="ins-loss-kpi__value" id="insLossKpiBookings">0</p></div></article></div>
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Reizigers in verliesboekingen</p><p class="ins-loss-kpi__value" id="insLossKpiPax">0</p></div></article></div>
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Gem. verlies per persoon</p><p class="ins-loss-kpi__value text-danger" id="insLossKpiAvgLossPerPax">€ 0</p><p class="ins-loss-kpi__sub" id="insLossKpiTotalLossSub">Totaal verlies: € 0</p></div></article></div>
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Mediaan verlies per persoon</p><p class="ins-loss-kpi__value text-danger" id="insLossKpiMedianLossPerPax">€ 0</p></div></article></div>
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Aandeel verliesboekingen</p><p class="ins-loss-kpi__value" id="insLossKpiShare">0%</p></div></article></div>
+          <div class="col-12 col-sm-6 col-xl-2"><article class="card border-0 shadow-sm ins-loss-kpi"><div class="card-body"><p class="ins-loss-kpi__label">Grootste verlies per persoon</p><p class="ins-loss-kpi__value text-danger" id="insLossKpiWorstPerPax">€ 0</p><p class="ins-loss-kpi__sub" id="insLossKpiWorstOrder">—</p></div></article></div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-xl-6">
+            <article class="card border-0 shadow-sm ins-loss-chart-card">
+              <div class="card-body">
+                <h3 class="h6 mb-2">Gem. verlies per persoon per bestemming</h3>
+                <div class="ins-loss-chart-wrap"><canvas id="insLossChartDestination"></canvas></div>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-xl-6">
+            <article class="card border-0 shadow-sm ins-loss-chart-card">
+              <div class="card-body">
+                <h3 class="h6 mb-2">Gem. verlies per persoon per periode</h3>
+                <div class="ins-loss-chart-wrap"><canvas id="insLossChartPeriod"></canvas></div>
+                <p class="small text-muted mb-0 d-none" id="insLossChartPeriodHint">Te weinig periodes om een trend te tonen.</p>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-xl-6">
+            <article class="card border-0 shadow-sm ins-loss-chart-card">
+              <div class="card-body">
+                <h3 class="h6 mb-2">Gem. verlies per persoon per transport</h3>
+                <div class="ins-loss-chart-wrap"><canvas id="insLossChartTransport"></canvas></div>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-xl-6">
+            <article class="card border-0 shadow-sm ins-loss-chart-card">
+              <div class="card-body">
+                <h3 class="h6 mb-2">Kostenopbouw per persoon</h3>
+                <div class="ins-loss-chart-wrap"><canvas id="insLossChartCostBreakdown"></canvas></div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-12">
+            <article class="card border-0 shadow-sm ins-loss-chart-card">
+              <div class="card-body">
+                <h3 class="h6 mb-2">Top verliesboekingen per persoon</h3>
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0 ins-loss-table" id="insLossTopTable">
+                    <thead>
+                      <tr>
+                        <th data-sort="order_nummer" data-sort-type="text">Ordernummer</th>
+                        <th data-sort="bestemming_naam" data-sort-type="text">Bestemming</th>
+                        <th data-sort="transport_naam" data-sort-type="text">Transport</th>
+                        <th data-sort="vertrekdatum" data-sort-type="text">Vertrekdatum</th>
+                        <th class="text-end" data-sort="aantal_reizigers" data-sort-type="number">Reizigers</th>
+                        <th class="text-end" data-sort="omzet_per_persoon" data-sort-type="number">Omzet p.p.</th>
+                        <th class="text-end" data-sort="kosten_per_persoon" data-sort-type="number">Kosten p.p.</th>
+                        <th class="text-end" data-sort="verlies_per_persoon" data-sort-type="number">Verlies p.p.</th>
+                        <th class="text-end" data-sort="winst" data-sort-type="number">Totaal verlies</th>
+                        <th data-sort="grootste_kostendrijver" data-sort-type="text">Grootste kostendrijver</th>
+                      </tr>
+                    </thead>
+                    <tbody id="insLossTopTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <article class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h3 class="h6 mb-3">Detailtabel verlieslatende boekingen</h3>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0 ins-loss-table" id="insLossTable">
+                <thead>
+                  <tr>
+                    <th data-sort="order_nummer" data-sort-type="text">Ordernummer</th>
+                    <th data-sort="brand" data-sort-type="text">Brand</th>
+                    <th data-sort="bestemming_naam" data-sort-type="text">Bestemming</th>
+                    <th data-sort="transport_naam" data-sort-type="text">Transport</th>
+                    <th data-sort="vertrekdatum" data-sort-type="text">Vertrekdatum</th>
+                    <th class="text-end" data-sort="aantal_reizigers" data-sort-type="number">Reizigers</th>
+                    <th class="text-end" data-sort="omzet_per_persoon" data-sort-type="number">Omzet p.p.</th>
+                    <th class="text-end" data-sort="kosten_per_persoon" data-sort-type="number">Kosten p.p.</th>
+                    <th class="text-end" data-sort="verlies_per_persoon" data-sort-type="number">Verlies p.p.</th>
+                    <th class="text-end" data-sort="winst" data-sort-type="number">Totaal verlies</th>
+                    <th class="text-end" data-sort="winstmarge" data-sort-type="number">Marge</th>
+                    <th class="text-end" data-sort="accommodatiekost_per_persoon" data-sort-type="number">Accommodatiekost p.p.</th>
+                    <th class="text-end" data-sort="transportkost_per_persoon" data-sort-type="number">Transportkost p.p.</th>
+                    <th class="text-end" data-sort="transferkost_per_persoon" data-sort-type="number">Transferkost p.p.</th>
+                    <th class="text-end" data-sort="extra_kosten_per_persoon" data-sort-type="number">Extra kosten p.p.</th>
+                    <th data-sort="grootste_kostendrijver" data-sort-type="text">Grootste kostendrijver</th>
+                  </tr>
+                </thead>
+                <tbody id="insLossTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <div class="tab-pane fade" id="insPaneEvolutions" role="tabpanel" aria-labelledby="insTabEvolutions" tabindex="0">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-2">Evoluties</h2>
+          <p class="text-muted mb-0">Binnenkort beschikbaar</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="insightsDetailsModal"
+    tabindex="-1"
+    aria-labelledby="insightsDetailsModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header">
+          <h2 class="modal-title h5 mb-0" id="insightsDetailsModalTitle">Alert details</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body" id="insightsDetailsModalBody"></div>
+        <div class="modal-footer" id="insightsDetailsModalFooter"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <div
+    id="insightsApiConfig"
+    class="d-none"
+    data-finance-options-url="{{ url_for('dashboard.financieel_options') }}"
+    data-finance-data-url="{{ url_for('dashboard.financieel_data') }}"
+    data-annulaties-data-url="{{ url_for('dashboard.annulaties_data') }}"
+    data-losses-options-url="{{ url_for('dashboard.inzichten_verliezen_options') }}"
+    data-losses-data-url="{{ url_for('dashboard.inzichten_verliezen_data') }}"
+  ></div>
+  <script>
+    const insightsApiConfigEl = document.getElementById("insightsApiConfig");
+    window.__INSIGHTS_API__ = {
+      financeOptions:
+        (insightsApiConfigEl && insightsApiConfigEl.dataset && insightsApiConfigEl.dataset.financeOptionsUrl) || "",
+      financeData:
+        (insightsApiConfigEl && insightsApiConfigEl.dataset && insightsApiConfigEl.dataset.financeDataUrl) || "",
+      annulatiesData:
+        (insightsApiConfigEl && insightsApiConfigEl.dataset && insightsApiConfigEl.dataset.annulatiesDataUrl) || "",
+      lossesOptions:
+        (insightsApiConfigEl && insightsApiConfigEl.dataset && insightsApiConfigEl.dataset.lossesOptionsUrl) || "",
+      lossesData:
+        (insightsApiConfigEl && insightsApiConfigEl.dataset && insightsApiConfigEl.dataset.lossesDataUrl) || "",
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}?v=st2"></script>
+  <script src="{{ url_for('static', filename='js/inzichten.js') }}?v=insights-v5"></script>
+{% endblock %}
+

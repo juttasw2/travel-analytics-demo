@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Alle boekingen · TravelAnalytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <div class="mb-4">
+    <h1 class="page-title">Alle boekingen</h1>
+    <p class="page-subtitle">Doorzoekbare lijst en detail per boeking — voor audit en verdieping.</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
+        <div>
+          <div class="fw-semibold">Filters</div>
+          <div class="text-muted small">
+            Gebruik filters om de tabel te vernieuwen. Gegevens worden pas bijgewerkt na “Filters toepassen”.
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button id="dvApplyBtn" type="button" class="btn btn-overzicht-apply" disabled>
+            Filters toepassen
+          </button>
+          <button id="dvResetBtn" type="button" class="btn btn-overzicht-secondary" disabled>
+            Filters wissen
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-lg-4">
+          <label class="form-label small text-muted mb-1" for="dvSearch">Zoekveld</label>
+          <input
+            id="dvSearch"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="Ordernummer, bestemming, accommodatie of reizigersnaam"
+          />
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label small text-muted mb-1" for="dvBrand">Merk</label>
+          <select id="dvBrand" class="form-select form-select-sm">
+            <option value="__all__" selected>Alle merken</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label small text-muted mb-1" for="dvBestemming">Bestemming</label>
+          <select id="dvBestemming" class="form-select form-select-sm">
+            <option value="" selected>Alle bestemmingen</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-2">
+          <label class="form-label small text-muted mb-1" for="dvYear">Jaar</label>
+          <select id="dvYear" class="form-select form-select-sm">
+            <option value="0" selected>Alle jaren</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-2">
+          <label class="form-label small text-muted mb-1" for="dvStatus">Status</label>
+          <select id="dvStatus" class="form-select form-select-sm">
+            <option value="" selected>Alle boekingsstatussen</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <label class="form-label small text-muted mb-1" for="dvDateKind">Datum range op</label>
+          <select id="dvDateKind" class="form-select form-select-sm">
+            <option value="boekingsdatum" selected>Boekingsdatum</option>
+            <option value="vertrekdatum">Vertrekdatum</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-2">
+          <label class="form-label small text-muted mb-1" for="dvDateFrom">Van</label>
+          <input id="dvDateFrom" type="date" class="form-control form-control-sm" />
+        </div>
+
+        <div class="col-12 col-lg-2">
+          <label class="form-label small text-muted mb-1" for="dvDateTo">Tot</label>
+          <input id="dvDateTo" type="date" class="form-control form-control-sm" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dvError" class="alert alert-danger d-none mb-3" role="alert"></div>
+  <div id="dvSuccess" class="alert alert-success d-none mb-3" role="alert"></div>
+
+  <!-- Table -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+        <div class="fw-semibold">Boekingen</div>
+        <div id="dvLoadingText" class="text-muted small d-none">Laden…</div>
+      </div>
+
+      <div class="data-verzameling-table-scroll">
+        <table class="table table-sm table-hover data-verzameling-table mb-0 align-middle">
+          <thead>
+            <tr>
+              <th class="text-nowrap">Ordernr.</th>
+              <th class="text-nowrap">Bestemming</th>
+              <th class="text-nowrap">Accommodatie</th>
+              <th class="text-nowrap">Vertrek</th>
+              <th class="text-nowrap">Terugkeer</th>
+              <th class="text-nowrap">Boeking</th>
+              <th class="text-nowrap text-end">Reizigers</th>
+              <th class="text-nowrap">Boeking status</th>
+              <th class="text-nowrap">Betaling status</th>
+              <th class="text-nowrap">Doelgroep</th>
+              <th class="text-nowrap">Transport</th>
+              <th class="text-nowrap text-end">Omzet</th>
+              <th class="text-nowrap text-end">Actie</th>
+            </tr>
+          </thead>
+          <tbody id="dvTableBody">
+            <!-- gevuld via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+        <button id="dvPrevBtn" type="button" class="btn btn-sm btn-outline-secondary" disabled>
+          Vorige
+        </button>
+        <div class="text-muted small">
+          <span id="dvPageInfo">Pagina 1</span>
+        </div>
+        <button id="dvNextBtn" type="button" class="btn btn-sm btn-outline-secondary" disabled>
+          Volgende
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal fade" id="dvDeleteModal" tabindex="-1" aria-labelledby="dvDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dvDeleteModalLabel">Boeking permanent verwijderen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-muted small mb-2" id="dvDeleteModalSub">—</div>
+          <p class="mb-2">Weet je zeker dat je deze boeking permanent wilt verwijderen?</p>
+          <p class="mb-0 text-danger small">
+            Dit verwijdert ook gekoppelde data (reizigers, reiziger_financien, boeking_financien, accommodatie-gegevens,
+            excursies, betalingen en overige gekoppelde boekingsdata) via database-cascade.
+          </p>
+          <div id="dvDeleteError" class="alert alert-danger d-none mt-3 mb-0" role="alert"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="dvDeleteCancelBtn" type="button" class="btn btn-overzicht-secondary" data-bs-dismiss="modal">Annuleren</button>
+          <button id="dvDeleteConfirmBtn" type="button" class="btn btn-danger">Permanent verwijderen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail drawer -->
+  <div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="dvDetailDrawer"
+    aria-labelledby="dvDetailDrawerLabel"
+  >
+    <div class="offcanvas-header">
+      <div class="w-100 d-flex align-items-start justify-content-between gap-3">
+        <div>
+          <div class="fw-semibold" id="dvDetailDrawerLabel">Boeking details</div>
+          <div class="text-muted small" id="dvDetailDrawerSub">—</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button id="dvDeleteBtn" type="button" class="btn btn-sm btn-outline-danger d-none">
+            🗑️ Verwijderen
+          </button>
+          <button id="dvEditBtn" type="button" class="btn btn-sm btn-overzicht-apply d-none">
+            ✏️ Bewerken
+          </button>
+        </div>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Sluiten"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="dvDetailLoading" class="d-none text-muted">Laden…</div>
+      <div id="dvDetailContent" class="d-none">
+        <div class="mb-4">
+          <div class="fw-semibold mb-2">Boeking</div>
+          <div id="dvBookingFields" class="row g-2"></div>
+        </div>
+
+        <div class="mb-4">
+          <div class="fw-semibold mb-2">Accommodatie</div>
+          <div id="dvAccommodationFields" class="text-muted small"></div>
+        </div>
+
+        <div class="mb-4">
+          <div class="fw-semibold mb-2">Reizigers</div>
+          <div id="dvTravellersFields" class="text-muted small"></div>
+        </div>
+
+        <div class="mb-4">
+          <div class="fw-semibold mb-2">Excursies</div>
+          <div id="dvExcursiesFields" class="text-muted small"></div>
+        </div>
+
+        <div class="mb-4">
+          <div class="fw-semibold mb-2">Extra’s / add-ons</div>
+          <div id="dvAddonsFields" class="text-muted small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="modal fade" id="dvEditModal" tabindex="-1" aria-labelledby="dvEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title" id="dvEditModalLabel">✏️ Boeking bewerken</h5>
+            <div class="text-muted small" id="dvEditModalSub">—</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <form id="dvEditForm" novalidate>
+          <div class="modal-body">
+            <div id="dvEditError" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+            <div class="row g-3">
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditOrdernummer">Ordernummer</label>
+                <input id="dvEditOrdernummer" name="order_nummer" type="text" class="form-control form-control-sm" readonly />
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditBestemming">Bestemming *</label>
+                <input id="dvEditBestemming" name="bestemming" type="text" class="form-control form-control-sm" required list="dvBestemmingSuggestions" />
+                <datalist id="dvBestemmingSuggestions"></datalist>
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditAccommodatie">Accommodatie *</label>
+                <input id="dvEditAccommodatie" name="accommodatie" type="text" class="form-control form-control-sm" required />
+              </div>
+
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditAccommodatieType">Type accommodatie</label>
+                <input id="dvEditAccommodatieType" name="accommodatie_type" type="text" class="form-control form-control-sm" list="dvAccommodatieTypeSuggestions" />
+                <datalist id="dvAccommodatieTypeSuggestions"></datalist>
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditLeverancier">Leverancier</label>
+                <input id="dvEditLeverancier" name="leverancier" type="text" class="form-control form-control-sm" list="dvLeverancierSuggestions" />
+                <datalist id="dvLeverancierSuggestions"></datalist>
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditReizigersAantal">Reizigers aantal</label>
+                <input id="dvEditReizigersAantal" name="aantal_reizigers" type="number" min="0" step="1" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditVertrekdatum">Vertrekdatum</label>
+                <input id="dvEditVertrekdatum" name="vertrekdatum" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditTerugkeerdatum">Terugkeerdatum</label>
+                <input id="dvEditTerugkeerdatum" name="terugkeerdatum" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditBoekingsdatum">Boekingsdatum</label>
+                <input id="dvEditBoekingsdatum" name="boekingsdatum" type="date" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditBoekingsstatus">Boekingsstatus *</label>
+                <select id="dvEditBoekingsstatus" name="boeking_status" class="form-select form-select-sm" required></select>
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditBetaalstatus">Betaalstatus</label>
+                <select id="dvEditBetaalstatus" name="betaling_status" class="form-select form-select-sm"></select>
+              </div>
+              <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="dvEditPrepaidBedrag">Prepaid bedrag</label>
+                <input id="dvEditPrepaidBedrag" name="prepaid_bedrag" type="number" min="0" step="0.01" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label small text-muted mb-1" for="dvEditExcursies">Excursies</label>
+                <select id="dvEditExcursies" name="excursies" class="form-select form-select-sm dv-multi-select" multiple></select>
+                <div class="form-text">Meerdere selecties mogelijk (Ctrl/Cmd + klik).</div>
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label small text-muted mb-1" for="dvEditAddons">Extra’s / add-ons</label>
+                <select id="dvEditAddons" name="addons" class="form-select form-select-sm dv-multi-select" multiple></select>
+                <div class="form-text">Meerdere selecties mogelijk (Ctrl/Cmd + klik).</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="dvEditCancelBtn" type="button" class="btn btn-overzicht-secondary" data-bs-dismiss="modal">Annuleren</button>
+            <button id="dvEditSaveBtn" type="submit" class="btn btn-overzicht-apply">Opslaan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{{ url_for('static', filename='js/data_verzameling.js') }}?v=dv202617"></script>
+{% endblock %}
+

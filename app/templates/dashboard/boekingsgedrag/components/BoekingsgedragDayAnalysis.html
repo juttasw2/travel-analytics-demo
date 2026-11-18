@@ -1,0 +1,63 @@
+<div class="bt-section-intro mb-3">
+  <h2 class="h5 mb-1">Dag per dag analyse</h2>
+  <p class="text-muted small mb-0">
+    Vergelijk twee kalenderjaren naast elkaar (zelfde maand). Boekingen en pax/boeking op boekingsdatum; reizigers op basis van verblijfsdagen (vertrek t/m terugkeer).
+  </p>
+</div>
+
+<form class="bt-local-filters card border-0 shadow-none bt-local-filters--panel mb-3" action="#" method="get" onsubmit="return false;">
+  <div class="card-body py-3">
+    <div class="row g-2 align-items-end">
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="btHmMonth" class="form-label small mb-1">Maand</label>
+        <select id="btHmMonth" class="form-select form-select-sm"></select>
+      </div>
+      <div class="col-6 col-md-2 col-lg-2">
+        <label for="btHmYearLeft" class="form-label small mb-1">Jaar links</label>
+        <select id="btHmYearLeft" class="form-select form-select-sm"></select>
+      </div>
+      <div class="col-6 col-md-2 col-lg-2">
+        <label for="btHmYearRight" class="form-label small mb-1">Jaar rechts</label>
+        <select id="btHmYearRight" class="form-select form-select-sm"></select>
+      </div>
+      <div class="col-6 col-md-2 col-lg-2">
+        <label for="btMonthHeatmapKpi" class="form-label small mb-1">KPI</label>
+        <select id="btMonthHeatmapKpi" class="form-select form-select-sm">
+          <option value="bookings" selected>Boekingen</option>
+          <option value="pax_booking">Pax</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-6 col-lg-2">
+        <label for="btHmDestination" class="form-label small mb-1">Bestemming</label>
+        <select id="btHmDestination" class="form-select form-select-sm"></select>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <label for="btHmBrand" class="form-label small mb-1">Brand</label>
+        <select id="btHmBrand" class="form-select form-select-sm">
+          <option value="__all__">Alle merken</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="btHmCountry" class="form-label small mb-1">Land</label>
+        <select id="btHmCountry" class="form-select form-select-sm">
+          <option value="__all__">Alle landen</option>
+          <option value="BE">BE</option>
+          <option value="NL">NL</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-auto d-flex flex-wrap gap-2 align-items-end">
+        <button type="button" id="btHmReset" class="btn btn-outline-secondary btn-sm">Filters herstellen</button>
+        <button type="button" id="btHmApply" class="btn btn-bt-accent btn-sm">Toepassen</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row g-2">
+  {% set cardSuffix = "Left" %}
+  {% include "dashboard/boekingsgedrag/components/BoekingsgedragDayHeatmapCard.html" %}
+
+  {% set cardSuffix = "Right" %}
+  {% include "dashboard/boekingsgedrag/components/BoekingsgedragDayHeatmapCard.html" %}
+</div>

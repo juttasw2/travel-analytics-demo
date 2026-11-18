@@ -1,0 +1,60 @@
+{# ExcursionsFilters — globale filter state voor alle secties #}
+<div class="card border-0 shadow-sm mb-3 excursion-filters-card" id="excursionsFiltersRoot">
+  <div class="card-body p-3 p-lg-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+      <div>
+        <div class="fw-semibold">Filters</div>
+        <p class="text-muted small mb-0">
+          Alle secties gebruiken dezelfde filters. Klik op <strong>Toepassen</strong> om te herberekenen.
+          Geannuleerde boekingen (<code>cancelled</code>) worden in de data-laag uitgesloten.
+        </p>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-overzicht-apply" id="excApply">Toepassen</button>
+        <button type="button" class="btn btn-overzicht-secondary" id="excReset">Filters wissen</button>
+      </div>
+    </div>
+
+    <div class="excursion-filters-row">
+      <div class="excursion-filter-item">
+        <label class="form-label small text-muted mb-1" for="excYear">Jaar</label>
+        <select id="excYear" class="form-select form-select-sm" aria-label="Jaar" {% if is_versie_b %}disabled{% endif %}>
+          {% if is_versie_b %}
+            <option value="{{ rbac_current_year }}" selected>{{ rbac_current_year }}</option>
+          {% endif %}
+        </select>
+      </div>
+      <div class="excursion-filter-item">
+        <label class="form-label small text-muted mb-1" for="excBrand">Brand</label>
+        <select id="excBrand" class="form-select form-select-sm">
+          <option value="__all__">Alle brands</option>
+        </select>
+      </div>
+      <div class="excursion-filter-item excursion-filter-item--wide">
+        <label class="form-label small text-muted mb-1" for="excDest">Bestemming</label>
+        <select id="excDest" class="form-select form-select-sm">
+          <option value="">Alle bestemmingen</option>
+        </select>
+      </div>
+      <div class="excursion-filter-item">
+        <label class="form-label small text-muted mb-1" for="excLand">Land</label>
+        <select id="excLand" class="form-select form-select-sm" aria-label="Land">
+          <option value="__all__">Alle landen</option>
+        </select>
+      </div>
+      <div class="excursion-filter-item">
+        <label class="form-label small text-muted mb-1" for="excExcursie">Excursie</label>
+        <select id="excExcursie" class="form-select form-select-sm" aria-label="Excursie filter"></select>
+      </div>
+      <div class="excursion-filter-item">
+        <label class="form-label small text-muted mb-1" for="excChannel">Verkoopkanaal</label>
+        <select id="excChannel" class="form-select form-select-sm" aria-label="Verkoopkanaal">
+          <option value="__all__">Alle kanalen</option>
+          <option value="Local sale">Local sale</option>
+          <option value="Booking sale">Booking sale</option>
+          <option value="Onbekend">Onbekend</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

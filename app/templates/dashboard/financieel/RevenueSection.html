@@ -1,0 +1,171 @@
+{# RevenueSection — Omzet & winst: trendgrafieken + analysenet tabellen #}
+<section class="finance-section card border-0 shadow-sm mb-4" id="finRevenueSection" data-finance-section="revenue">
+  <div class="card-body p-3 p-lg-4">
+    <h2 class="h5 fw-semibold mb-1">Omzet &amp; winst</h2>
+    <p class="text-muted small mb-4">
+      Omzet = som van <strong>totaal te betalen</strong> per boeking, waarbij elke boeking eerst wordt geaggregeerd over alle reizigers; winst volgens de vaste kostenformule in de applicatie.
+      Tijdelijke filter actief: bookings met <code>kost_accommodatie = 0</code> en status <code>accepted</code>, <code>booked</code> of <code>closed</code> worden uitgesloten uit winst.
+      Tabellen zijn standaard gesorteerd op omzet (hoog → laag), behalve de vaste tijdsvolgorde voor maand en kwartaal. Hover op de lijngrafieken voor detailbedragen.
+    </p>
+
+    <div class="row g-4 finance-chart-row">
+      <div class="col-12">
+        <div class="finance-chart-card h-100 d-flex flex-column">
+          <div class="fw-semibold mb-1">Omzet en winst per maand</div>
+          <p class="text-muted small mb-2">
+            Groen toont de winstlaag; oranje toont het verschil tussen winst en omzet. Tooltip toont per maand omzet en winst.
+          </p>
+          <div class="finance-chart-wrap flex-grow-1">
+            <canvas id="finChartRevenueProfitMonth" aria-label="Omzet en winst per maand"></canvas>
+          </div>
+          <div class="finance-chart-empty text-muted small mt-2 d-none" id="finEmptyRevenueProfitMonth">Geen gegevens voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mt-1">
+      <div class="col-12">
+        <div class="finance-chart-card">
+          <div class="fw-semibold mb-2">Omzet en winst per maand</div>
+          <p class="text-muted small mb-2">Per maand met uniforme KPI-kolommen en groei t.o.v. vorig jaar.</p>
+          <div class="table-responsive finance-table-scroll">
+            <table class="table table-sm table-hover align-middle finance-table finance-table--analysis finance-table--profit-grid mb-0" id="finTblMonth">
+              <thead class="table-light">
+                <tr>
+                  <th data-sort="label" data-sort-type="text">Maand</th>
+                  <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                  <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                  <th class="text-end" data-sort="sgOm" data-sort-type="number">Groei omzet (%)</th>
+                  <th class="text-end" data-sort="sgWin" data-sort-type="number">Groei winst (%)</th>
+                  <th class="text-end" data-sort="wm" data-sort-type="number">Winstmarge</th>
+                  <th class="text-end" data-sort="gwp" data-sort-type="number">Gem. winst p.p.</th>
+                  <th class="text-end" data-sort="boekingen" data-sort-type="number">Aantal boekingen</th>
+                  <th class="text-end" data-sort="pax" data-sort-type="number">Aantal pax</th>
+                </tr>
+              </thead>
+              <tbody id="finTblMonthBody">
+                <tr><td colspan="9" class="text-muted text-center py-3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mt-1">
+      <div class="col-12">
+        <div class="finance-chart-card">
+          <div class="fw-semibold mb-2">Omzet en winst per merk</div>
+          <p class="text-muted small mb-2">Ranking op omzet met dezelfde kolomstructuur als de andere omzet- en winstabellen.</p>
+          <div class="table-responsive finance-table-scroll">
+            <table class="table table-sm table-hover align-middle finance-table finance-table--analysis finance-table--profit-grid mb-0" id="finTblBrand">
+              <thead class="table-light">
+                <tr>
+                  <th data-sort="label" data-sort-type="text">Merk</th>
+                  <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                  <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                  <th class="text-end" data-sort="sgOm" data-sort-type="number">Groei omzet (%)</th>
+                  <th class="text-end" data-sort="sgWin" data-sort-type="number">Groei winst (%)</th>
+                  <th class="text-end" data-sort="wm" data-sort-type="number">Winstmarge</th>
+                  <th class="text-end" data-sort="gwp" data-sort-type="number">Gem. winst p.p.</th>
+                  <th class="text-end" data-sort="boekingen" data-sort-type="number">Aantal boekingen</th>
+                  <th class="text-end" data-sort="pax" data-sort-type="number">Aantal pax</th>
+                </tr>
+              </thead>
+              <tbody id="finTblBrandBody">
+                <tr><td colspan="9" class="text-muted text-center py-3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mt-1">
+      <div class="col-12">
+        <div class="finance-chart-card">
+          <div class="fw-semibold mb-2">Omzet en winst per bestemming</div>
+          <p class="text-muted small mb-2">Topbestemmingen op omzet met uniforme KPI-kolommen en groeipercentages t.o.v. vorig jaar.</p>
+          <div class="table-responsive finance-table-scroll">
+            <table class="table table-sm table-hover align-middle finance-table finance-table--analysis finance-table--profit-grid mb-0" id="finTblDest">
+              <thead class="table-light">
+                <tr>
+                  <th data-sort="label" data-sort-type="text">Bestemming</th>
+                  <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                  <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                  <th class="text-end" data-sort="sgOm" data-sort-type="number">Groei omzet (%)</th>
+                  <th class="text-end" data-sort="sgWin" data-sort-type="number">Groei winst (%)</th>
+                  <th class="text-end" data-sort="wm" data-sort-type="number">Winstmarge</th>
+                  <th class="text-end" data-sort="gwp" data-sort-type="number">Gem. winst p.p.</th>
+                  <th class="text-end" data-sort="boekingen" data-sort-type="number">Aantal boekingen</th>
+                  <th class="text-end" data-sort="pax" data-sort-type="number">Aantal pax</th>
+                </tr>
+              </thead>
+              <tbody id="finTblDestBody">
+                <tr><td colspan="9" class="text-muted text-center py-3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mt-1">
+      <div class="col-12">
+        <div class="finance-chart-card">
+          <div class="fw-semibold mb-2">Omzet en winst per kwartaal</div>
+          <p class="text-muted small mb-2">Per kwartaal met dezelfde metrics als de overige omzet- en winstabellen.</p>
+          <div class="table-responsive finance-table-scroll">
+            <table class="table table-sm table-hover align-middle finance-table finance-table--analysis finance-table--profit-grid mb-0" id="finTblQuarter">
+              <thead class="table-light">
+                <tr>
+                  <th data-sort="label" data-sort-type="text">Kwartaal</th>
+                  <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                  <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                  <th class="text-end" data-sort="sgOm" data-sort-type="number">Groei omzet (%)</th>
+                  <th class="text-end" data-sort="sgWin" data-sort-type="number">Groei winst (%)</th>
+                  <th class="text-end" data-sort="wm" data-sort-type="number">Winstmarge</th>
+                  <th class="text-end" data-sort="gwp" data-sort-type="number">Gem. winst p.p.</th>
+                  <th class="text-end" data-sort="boekingen" data-sort-type="number">Aantal boekingen</th>
+                  <th class="text-end" data-sort="pax" data-sort-type="number">Aantal pax</th>
+                </tr>
+              </thead>
+              <tbody id="finTblQuarterBody">
+                <tr><td colspan="9" class="text-muted text-center py-3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mt-1">
+      <div class="col-12">
+        <div class="finance-chart-card">
+          <div class="fw-semibold mb-2">Omzet en winst per jaar</div>
+          <p class="text-muted small mb-2">Per jaar met dezelfde metrics als de overige omzet- en winstabellen.</p>
+          <div class="table-responsive finance-table-scroll">
+            <table class="table table-sm table-hover align-middle finance-table finance-table--analysis finance-table--profit-grid mb-0" id="finTblYear">
+              <thead class="table-light">
+                <tr>
+                  <th data-sort="label" data-sort-type="text">Jaar</th>
+                  <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                  <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                  <th class="text-end" data-sort="sgOm" data-sort-type="number">Groei omzet (%)</th>
+                  <th class="text-end" data-sort="sgWin" data-sort-type="number">Groei winst (%)</th>
+                  <th class="text-end" data-sort="wm" data-sort-type="number">Winstmarge</th>
+                  <th class="text-end" data-sort="gwp" data-sort-type="number">Gem. winst p.p.</th>
+                  <th class="text-end" data-sort="boekingen" data-sort-type="number">Aantal boekingen</th>
+                  <th class="text-end" data-sort="pax" data-sort-type="number">Aantal pax</th>
+                </tr>
+              </thead>
+              <tbody id="finTblYearBody">
+                <tr><td colspan="9" class="text-muted text-center py-3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

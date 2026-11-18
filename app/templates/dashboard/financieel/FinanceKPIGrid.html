@@ -1,0 +1,166 @@
+{# Finance KPI — 10 kaarten; klik opent uitlegmodal (data-finance-kpi) #}
+<div class="finance-kpi-section mb-4" id="finKPIGrid">
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 finance-kpi-row finance-kpi-row--equal">
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="omzet"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Omzet"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Omzet</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiOmzet">—</div>
+          <div class="finance-kpi-compare small" id="finKpiOmzetCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="paid"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Reeds betaald"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Reeds betaald</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiPaid">—</div>
+          <div class="finance-kpi-compare small" id="finKpiPaidCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="open"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Openstaand"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Openstaand</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiOpen">—</div>
+          <div class="finance-kpi-compare small" id="finKpiOpenCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="pct_paid"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: % betaald"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">% betaald</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiPctPaid">—</div>
+          <div class="finance-kpi-compare small" id="finKpiPctPaidCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="pct_prob"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: % problematische betalingen"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">% problematische betalingen</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiPctProbOpmerking">—</div>
+          <div class="finance-kpi-compare small" id="finKpiPctProbOpmerkingCmp"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="avg_pax"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Gemiddelde prijs per persoon"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Gemiddelde prijs per persoon</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiAvgPax">—</div>
+          <div class="finance-kpi-compare small" id="finKpiAvgPaxCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="winst_bookings"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Winst uit boekingen"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Winst uit boekingen</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiWinstBookings">—</div>
+          <div class="finance-kpi-compare small" id="finKpiWinstBookingsCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="winst_extras"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Winst uit extra's"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Winst uit extra's</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiWinstExtras">—</div>
+          <div class="finance-kpi-compare small" id="finKpiWinstExtrasCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="winst_total"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Totale winst"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Totale winst</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiWinstTotal">—</div>
+          <div class="finance-kpi-compare small" id="finKpiWinstTotalCmp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div
+        class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--interactive"
+        role="button"
+        tabindex="0"
+        data-finance-kpi="avg_profit_pax"
+        aria-haspopup="dialog"
+        aria-label="Uitleg: Gemiddelde winst per persoon"
+      >
+        <div class="card-body finance-kpi-card__body d-flex flex-column">
+          <div class="finance-kpi-label">Gemiddelde winst per persoon</div>
+          <div class="finance-kpi-value mt-auto" id="finKpiAvgProfitPax">—</div>
+          <div class="finance-kpi-compare small" id="finKpiAvgProfitPaxCmp"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

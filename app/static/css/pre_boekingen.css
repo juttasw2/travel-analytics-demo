@@ -1,0 +1,310 @@
+.pre-boekingen-page .page-subtitle {
+  color: #64748b;
+}
+
+.pre-tabs .nav-link {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.pre-tabs .nav-link.active {
+  background: rgba(249, 115, 22, 0.14);
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.pre-boekingen-page #vluchtFilters .card-body {
+  padding: 1rem;
+}
+
+.pre-file-input {
+  max-width: 320px;
+}
+
+.pre-kpi-card {
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 12px;
+  background: #fff;
+  min-height: 98px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pre-kpi-card .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.03em;
+}
+
+.pre-kpi-card .value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pre-kpi-card--danger .value {
+  color: #b91c1c;
+}
+.pre-kpi-card .sub {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.pre-kpi-vergelijk {
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.pre-kpi-vergelijk.pos {
+  color: #16a34a;
+}
+
+.pre-kpi-vergelijk.neg {
+  color: #dc2626;
+}
+
+.pre-kpi-vergelijk.neu {
+  color: #64748b;
+}
+.pre-kpi-progress {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pre-kpi-progress > span {
+  display: block;
+  height: 100%;
+  background: #f97316;
+}
+.pre-risico > .value {
+  color: #b91c1c;
+}
+
+.pre-table-scroll {
+  max-height: min(58vh, 560px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.pre-tabel thead th {
+  font-size: 0.76rem;
+  color: #64748b;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f8fafc;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  padding: 0.72rem 0.8rem !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.pre-tabel td {
+  font-size: 0.86rem;
+  white-space: nowrap;
+  padding: 0.7rem 0.8rem !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.pre-tabel {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.pre-tabel tbody tr {
+  cursor: pointer;
+}
+
+.pre-tabel tbody tr:hover {
+  background: rgba(249, 115, 22, 0.05);
+}
+
+.vlucht-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.bezetting-cell {
+  min-width: 0;
+}
+.bezetting-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+.bezetting-bar > span {
+  display: block;
+  height: 100%;
+}
+
+.mini-card {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 12px;
+}
+
+.capaciteit-donut-wrap {
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.pre-grafiek-kaart .card-body {
+  height: 380px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.pre-grafiek-kaart .card-body > p {
+  flex: 0 0 auto;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.pre-chart-canvas-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.pre-chart-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.pre-chart-canvas-wrap-tijd {
+  width: min(100%, 560px);
+  height: 320px;
+  margin: 0 auto;
+}
+
+.pre-chart-donut-wrap {
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+.pre-chart-donut-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.pre-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.pre-status-cell {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap;
+}
+
+.pre-status-risico {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pre-status-warning {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.pre-status-letop {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.pre-status-oke {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.pre-status-volzet {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pre-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.pre-detail-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.8rem;
+  background: #fff;
+}
+
+.pre-detail-card h4 {
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+
+.pre-detail-list {
+  margin: 0;
+  padding-left: 0;
+  font-size: 0.83rem;
+  list-style: none;
+}
+
+@media (max-width: 1440px) {
+  .pre-boekingen-page #vluchtAllotmentsTabel .px-4 {
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+  }
+
+  .pre-tabel thead th {
+    font-size: 0.69rem;
+    padding: 0.5rem 0.42rem !important;
+  }
+
+  .pre-tabel td {
+    font-size: 0.75rem;
+    padding: 0.48rem 0.42rem !important;
+  }
+
+  .bezetting-cell {
+    line-height: 1.1;
+  }
+}
+
+@media (max-width: 1200px) {
+  .pre-table-scroll {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .pre-chart-canvas-wrap-tijd {
+    width: min(100%, 460px);
+    height: 270px;
+  }
+
+  .pre-chart-donut-wrap {
+    width: min(100%, 260px);
+  }
+}

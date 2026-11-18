@@ -1,0 +1,80 @@
+<section class="finance-section card border-0 shadow-sm mb-4" id="finDiscountsSection" data-finance-section="discounts">
+  <div class="card-body p-3 p-lg-4">
+    <h2 class="h5 fw-semibold mb-1">Kortingen</h2>
+    <p class="text-muted small mb-4">
+      Overzicht van kortingsbedragen en kortingscodes op reizigersniveau binnen dezelfde filtercontext als de rest van Financiën.
+    </p>
+
+    <div class="row g-2 g-md-3 mb-4 row-cols-2 row-cols-md-3 row-cols-xl-4">
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="discount_total"><div class="finance-kpi-label">Totale korting</div><div class="finance-kpi-value fs-6" id="finDiscKpiTotal">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="bookings_with_discount"><div class="finance-kpi-label">Boekingen met korting</div><div class="finance-kpi-value fs-6" id="finDiscKpiBookings">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="travellers_with_discount"><div class="finance-kpi-label">Reizigers met korting</div><div class="finance-kpi-value fs-6" id="finDiscKpiTravellers">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="avg_discount_per_traveller"><div class="finance-kpi-label">Gem. korting per reiziger</div><div class="finance-kpi-value fs-6" id="finDiscKpiAvgTraveller">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="avg_discount_per_booking"><div class="finance-kpi-label">Gem. korting per boeking</div><div class="finance-kpi-value fs-6" id="finDiscKpiAvgBooking">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="pct_travellers_with_discount"><div class="finance-kpi-label">% reizigers met korting</div><div class="finance-kpi-value fs-6" id="finDiscKpiPctTravellers">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="pct_bookings_with_discount"><div class="finance-kpi-label">% boekingen met korting</div><div class="finance-kpi-value fs-6" id="finDiscKpiPctBookings">—</div></div></div>
+      <div class="col"><div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3" data-finance-discount-kpi="margin_impact"><div class="finance-kpi-label">Impact op winstmarge</div><div class="finance-kpi-value fs-6" id="finDiscKpiMarginImpact">—</div></div></div>
+    </div>
+
+    <div class="fw-semibold small mb-2">Visual dashboard</div>
+
+    <div class="fin-disc-dashboard-grid mb-4">
+      <div>
+        <article class="finance-chart-card h-100">
+          <h3 class="h6 fw-semibold mb-2">Verdeling kortingscodes</h3>
+          <div class="finance-chart-wrap finance-chart-wrap--donut"><canvas id="finDiscChartDonut"></canvas></div>
+        </article>
+      </div>
+      <div>
+        <article class="finance-chart-card h-100">
+          <div class="info-popover-block mb-2">
+            <div class="info-popover-head">
+              <button
+                type="button"
+                class="info-popover-trigger"
+                data-info-popover-trigger="info-fin-margin-impact"
+                aria-label="Uitleg over impact op winstmarge"
+              >
+                i
+              </button>
+              <h3 class="h6 fw-semibold mb-0">Impact op winstmarge</h3>
+            </div>
+            <div id="info-fin-margin-impact" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+              <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+              <p class="info-popover-text">
+                Marge-impact drukt uit hoeveel procentpunt winstmarge verloren gaat door toegepaste kortingen ten opzichte van een scenario zonder korting. Positieve impact betekent hier een grotere margeverlaging door kortingen.
+              </p>
+            </div>
+          </div>
+          <div class="finance-chart-wrap"><canvas id="finDiscChartMarginImpact"></canvas></div>
+        </article>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+      <div class="fw-semibold small mb-0">Kortingscodes detail</div>
+      <span class="small text-muted">Klik op een code voor boekingsdetails</span>
+    </div>
+    <div class="table-responsive rounded border bg-white finance-table-scroll mb-4">
+      <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finDiscCodesTable">
+        <thead class="table-light">
+          <tr>
+            <th data-sort="code" data-sort-type="text">Kortingscode</th>
+            <th class="text-end" data-sort="travellers" data-sort-type="number">Reizigers</th>
+            <th class="text-end" data-sort="bookings" data-sort-type="number">Boekingen</th>
+            <th class="text-end" data-sort="discount" data-sort-type="number">Totale korting</th>
+            <th class="text-end" data-sort="avgTraveller" data-sort-type="number">Gem. korting p.p.</th>
+            <th class="text-end" data-sort="avgBooking" data-sort-type="number">Gem. korting p. boeking</th>
+            <th class="text-end" data-sort="profit" data-sort-type="number">Winst met korting</th>
+            <th class="text-end" data-sort="profitNoDiscount" data-sort-type="number">Winst zonder korting</th>
+            <th class="text-end" data-sort="marginCurrent" data-sort-type="number">Huidige winstmarge</th>
+            <th class="text-end" data-sort="marginImpact" data-sort-type="number">Marge-impact (pp)</th>
+          </tr>
+        </thead>
+        <tbody id="finDiscCodesBody">
+          <tr><td colspan="11" class="text-muted text-center py-3">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

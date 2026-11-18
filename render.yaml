@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: travel-analytics-demo
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --workers 2 --threads 4 --timeout 120
+    healthCheckPath: /login
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "1"
+      - key: DEMO_EMAIL
+        value: demo@example.com
+      - key: DEMO_PASSWORD
+        value: demo1234
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: ENABLE_CSRF_PROTECTION
+        value: "1"

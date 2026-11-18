@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Financiën · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/financieel.css') }}?v=ds14" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms1" />
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 finance-page" id="financePage">
+  <div id="financeError" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+  <header class="mb-4">
+    <h1 class="page-title">Financiën</h1>
+    <p class="page-subtitle mb-0">
+      Financiële analyse: omzet, winst, betalingen, verzekeringen en leverancierskosten in één overzicht.
+      Geannuleerde boekingen worden niet meegeteld.
+    </p>
+  </header>
+
+  <div class="alert alert-warning finance-profit-rule-notice mb-4" role="note">
+    <div class="fw-semibold mb-2">Winstfilter actief</div>
+    <p class="small mb-2">
+      Sommige boekingen worden tijdelijk uitgesloten uit de winstberekening wanneer de kost van de accommodatie gelijk is aan €0 en de boekingstatus accepted, booked of closed is. Daarnaast worden boekingen met de status cancelled, dropped en processing ook niet opgenomen in de winstberekening. Momenteel uitgesloten in deze selectie: <strong id="finProfitRuleExcludedCount">0</strong>.
+    </p>
+    <p class="small mb-1">Voor de winstberekening worden daarnaast de volgende conventies toegepast:</p>
+    <ul class="small mb-0 ps-3">
+      <li>Voor transport per bus wordt een kost van €130 gerekend, behalve bij Road Rebels.</li>
+      <li>Voor self wordt steeds een kost van €1 gerekend.</li>
+      <li>Wanneer de transportmethode plane is en er geen transferkost is ingevuld, wordt standaard een transferkost van €40 gerekend.</li>
+    </ul>
+  </div>
+
+  {% include "dashboard/financieel/FinanceFilters.html" %}
+
+  {% include "dashboard/financieel/FinanceKPIGrid.html" %}
+
+  <div class="finance-subtabs card border-0 shadow-sm mb-4">
+    <div class="card-body p-2 p-md-3">
+      <ul class="nav nav-pills flex-wrap gap-1 finance-main-tabs" id="financeMainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="financeTabRevenue" data-bs-toggle="pill" data-bs-target="#financePaneRevenue" type="button" role="tab" aria-controls="financePaneRevenue" aria-selected="true">
+            Omzet &amp; winst
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="financeTabPayments" data-bs-toggle="pill" data-bs-target="#financePanePayments" type="button" role="tab" aria-controls="financePanePayments" aria-selected="false">
+            Betalingen
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="financeTabInsurance" data-bs-toggle="pill" data-bs-target="#financePaneInsurance" type="button" role="tab" aria-controls="financePaneInsurance" aria-selected="false">
+            Verzekeringen
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="financeTabOtherRevenues" data-bs-toggle="pill" data-bs-target="#financePaneOtherRevenues" type="button" role="tab" aria-controls="financePaneOtherRevenues" aria-selected="false">
+            Andere opbrengsten
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="financeTabSuppliers" data-bs-toggle="pill" data-bs-target="#financePaneSuppliers" type="button" role="tab" aria-controls="financePaneSuppliers" aria-selected="false">
+            Leveranciers
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="financeTabDiscounts" data-bs-toggle="pill" data-bs-target="#financePaneDiscounts" type="button" role="tab" aria-controls="financePaneDiscounts" aria-selected="false">
+            Kortingen
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="finKpiHelpModal"
+    tabindex="-1"
+    aria-labelledby="finKpiHelpTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header py-2 py-md-3">
+          <h2 class="modal-title h6 mb-0" id="finKpiHelpTitle">KPI</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body small text-secondary" id="finKpiHelpBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content finance-tab-panels" id="financeMainTabContent">
+    <div class="tab-pane fade show active" id="financePaneRevenue" role="tabpanel" aria-labelledby="financeTabRevenue" tabindex="0">
+      {% include "dashboard/financieel/RevenueSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="financePanePayments" role="tabpanel" aria-labelledby="financeTabPayments" tabindex="0">
+      {% include "dashboard/financieel/PaymentsSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="financePaneInsurance" role="tabpanel" aria-labelledby="financeTabInsurance" tabindex="0">
+      {% include "dashboard/financieel/InsuranceSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="financePaneOtherRevenues" role="tabpanel" aria-labelledby="financeTabOtherRevenues" tabindex="0">
+      {% include "dashboard/financieel/OtherRevenuesSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="financePaneSuppliers" role="tabpanel" aria-labelledby="financeTabSuppliers" tabindex="0">
+      {% include "dashboard/financieel/SuppliersSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="financePaneDiscounts" role="tabpanel" aria-labelledby="financeTabDiscounts" tabindex="0">
+      {% include "dashboard/financieel/DiscountsSection.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <div
+    id="financeApiConfig"
+    class="d-none"
+    data-api-base="{{ url_for('dashboard.financieel') }}"
+    data-options-url="{{ url_for('dashboard.financieel_options') }}"
+    data-data-url="{{ url_for('dashboard.financieel_data') }}"
+    data-jouw-verblijf-cost-url="{{ url_for('dashboard.financieel_jouw_verblijf_kost') }}"
+    data-excursions-data-url="{{ url_for('dashboard.excursies_data') }}"
+  ></div>
+  <script>
+    const financeApiConfigEl = document.getElementById("financeApiConfig");
+    window.__FINANCE_API_BASE__ = (financeApiConfigEl && financeApiConfigEl.dataset && financeApiConfigEl.dataset.apiBase) || "";
+    window.__FINANCE_OPTIONS_URL__ =
+      (financeApiConfigEl && financeApiConfigEl.dataset && financeApiConfigEl.dataset.optionsUrl) || "";
+    window.__FINANCE_DATA_URL__ =
+      (financeApiConfigEl && financeApiConfigEl.dataset && financeApiConfigEl.dataset.dataUrl) || "";
+    window.__FINANCE_JOUW_VERBLIJF_COST_URL__ =
+      (financeApiConfigEl && financeApiConfigEl.dataset && financeApiConfigEl.dataset.jouwVerblijfCostUrl) || "";
+    window.__EXCURSIONS_DATA_URL__ =
+      (financeApiConfigEl && financeApiConfigEl.dataset && financeApiConfigEl.dataset.excursionsDataUrl) || "";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}?v=st2"></script>
+  <script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms1"></script>
+  <script src="{{ url_for('static', filename='js/financieel.js') }}?v=finance-dash-v29"></script>
+{% endblock %}

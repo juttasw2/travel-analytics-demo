@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Bestemmingen & periodes · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bestemmingen-page.css') }}?v=ds8" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms2" />
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 pb-3" id="bppPage">
+  <div class="mb-2 px-1 px-sm-2 bpp-page-header">
+    <h1 class="page-title">Bestemmingen &amp; periodes</h1>
+    <p class="page-subtitle mb-0">
+      Bekijk welke bestemmingen en reisperiodes het populairst zijn. Dit op basis van <strong>vertrek- en terugkeerdatum</strong> (verblijfslogica),
+      niet op boekingsdatum.
+    </p>
+  </div>
+
+  <div id="bppError" class="alert alert-danger mx-1 mx-sm-2 d-none" role="alert"></div>
+
+  <div class="vg-filter-strip mb-2 mx-1 mx-sm-2">
+    <div class="vg-filter-row vg-filter-row--primary">
+      <div class="vg-group vg-group--years">
+        <div class="vg-control">
+          <label class="vg-label" for="bppYear">Primair jaar</label>
+          <select id="bppYear" class="vg-input vg-input--year" aria-describedby="bppYearHint"></select>
+          <span id="bppYearHint" class="visually-hidden">Filter op kalenderjaar van vertrekdatum</span>
+        </div>
+      </div>
+
+      <div class="vg-group">
+        <div class="vg-control vg-control--narrow">
+          <label class="vg-label" for="bppCountry">Land (reizigers)</label>
+          <select id="bppCountry" class="vg-input">
+            <option value="__ALL__">Alle landen</option>
+            <option value="BE">BE</option>
+            <option value="NL">NL</option>
+            <option value="IT">IT</option>
+            <option value="OTHER">Overig</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="vg-group vg-group--actions">
+        <button type="button" id="bppApply" class="btn vg-btn-primary vg-btn">Toepassen</button>
+        <button type="button" id="bppReset" class="btn vg-btn-secondary vg-btn">Herstellen</button>
+      </div>
+    </div>
+
+    <div class="vg-filter-row vg-filter-row--secondary">
+      <div class="vg-control vg-control--brand">
+        <label class="vg-label" for="bppBrand">Merk</label>
+        <select id="bppBrand" class="vg-input">
+          <option value="__all__">Alle merken</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--destination">
+        <label class="vg-label" for="bppDestination">Bestemming</label>
+        <select id="bppDestination" class="vg-input"></select>
+      </div>
+      <div class="vg-control vg-control--narrow">
+        <label class="vg-label" for="bppBrandLand">Land (boeking)</label>
+        <select id="bppBrandLand" class="vg-input" title="Filter op brand_land (landcode van de boeking)">
+          <option value="__ALL__">Alle</option>
+          <option value="BE">BE</option>
+          <option value="NL">NL</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--date">
+        <label class="vg-label" for="bppDateFrom">Van datum</label>
+        <input id="bppDateFrom" type="date" class="vg-input" aria-label="Startdatum kalenderjaar (weergave)" />
+      </div>
+      <div class="vg-control vg-control--date">
+        <label class="vg-label" for="bppDateTo">Tot datum</label>
+        <input id="bppDateTo" type="date" class="vg-input" aria-label="Einddatum kalenderjaar (weergave)" />
+      </div>
+    </div>
+  </div>
+
+  <div id="bppLoading" class="text-muted small px-1 px-sm-2 mb-2">Laden…</div>
+
+  <div id="bppDashboard" class="d-none px-1 px-sm-2">
+    <div class="bpp-kpi-grid mb-3" id="bppKpiRow"></div>
+
+    <div class="row g-2 mb-3 align-items-stretch vg-dash-pair-row bpp-dash-pair-row">
+      <div class="col-12 col-lg-6 d-flex" id="bppTop20VertrekCol">
+        <div class="card border-0 shadow-sm w-100 h-100 vg-flat-card vg-dash-card">
+          <div class="card-body d-flex flex-column">
+            <div class="fw-semibold mb-2">Top 20 vertrekdagen (pax)</div>
+            <div class="bpp-chart-wrap bpp-chart-wrap--top20 flex-grow-1"><canvas id="bppChartTop20"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 d-flex" id="bppDestDeltaCol">
+        <div class="card border-0 shadow-sm w-100 h-100 vg-flat-card vg-dash-card">
+          <div class="card-body d-flex flex-column">
+            <div class="fw-semibold mb-1">Bestemmingen: boekingen en pax t.o.v. vorig jaar</div>
+            <div class="text-muted small mb-2">Waar groeit of krimpt volume? Vergelijking gebruikt het vorige kalenderjaar.</div>
+            <div class="table-responsive vg-table-scroll bpp-table-sticky flex-grow-1">
+              <table class="table table-sm vg-table-compact align-middle mb-0 bpp-sortable-table" id="bppDestinationDeltaTable">
+                <thead class="table-light" id="bppDestinationDeltaHead"></thead>
+                <tbody id="bppDestinationDeltaBody"></tbody>
+              </table>
+            </div>
+            <div id="bppDestinationDeltaEmpty" class="vg-empty d-none" role="status">Geen gegevens beschikbaar voor deze selectie.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-3 align-items-stretch vg-dash-pair-row bpp-dash-pair-row">
+      <div class="col-12 d-flex">
+        <section class="card border-0 shadow-sm mb-0 w-100 h-100">
+          <div class="card-body p-3 d-flex flex-column h-100">
+            <h2 class="h5 mb-2">Pax per vertrekweek</h2>
+            <p class="text-muted small mb-2">Overzicht van de aantal reizigers per vertrekweek (jaar <span id="bppWeekIsoYearHint">—</span>).</p>
+            <div class="bpp-chart-panel flex-grow-1 d-flex flex-column">
+              <div class="bpp-chart-wrap bpp-chart-wrap--week-iso bpp-chart-wrap--wide flex-grow-1"><canvas id="bppChartWeek"></canvas></div>
+              <div class="bpp-week-chart-nav d-flex align-items-center justify-content-center gap-2 mt-2" role="navigation" aria-label="Navigatie vertrekweken">
+                <button type="button" class="btn btn-sm btn-outline-secondary bpp-week-nav-btn" id="bppWeekPrev" aria-label="Vijf weken eerder">←</button>
+                <span class="small text-muted bpp-week-nav-label" id="bppWeekRangeLabel" aria-live="polite"></span>
+                <button type="button" class="btn btn-sm btn-outline-secondary bpp-week-nav-btn" id="bppWeekNext" aria-label="Vijf weken later">→</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-12 d-flex">
+        <section class="card border-0 shadow-sm mb-0 w-100 h-100">
+          <div class="card-body p-3 d-flex flex-column h-100">
+            <h2 class="h5 mb-2">Pax per vertrekmaand</h2>
+            <div class="bpp-chart-wrap bpp-chart-wrap--wide flex-grow-1"><canvas id="bppChartMonth"></canvas></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-3 align-items-stretch vg-dash-pair-row bpp-dash-pair-row">
+      <div class="col-12 col-lg-6 d-flex">
+        <section class="card border-0 shadow-sm mb-0 w-100 h-100">
+          <div class="card-body p-3 h-100 d-flex flex-column">
+            <h2 class="h5 mb-2">Juni – september (vertrekmaand)</h2>
+            <div class="table-responsive flex-grow-1 bpp-table-sticky">
+              <table class="table table-sm align-middle bpp-sortable-table" id="bppTableJJAS"></table>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-12 col-lg-6 d-flex">
+        <section class="card border-0 shadow-sm mb-0 w-100 h-100">
+          <div class="card-body p-3 h-100 d-flex flex-column">
+            <h2 class="h5 mb-2">Transport (pax)</h2>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-md-5"><div class="bpp-chart-wrap"><canvas id="bppChartTransport"></canvas></div></div>
+              <div class="col-md-7">
+                <div class="table-responsive bpp-table-sticky"><table class="table table-sm bpp-sortable-table" id="bppTableTransport"></table></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-3">
+        <div class="info-popover-block mb-2">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-bpp-country-shift"
+              aria-label="Uitleg over aandeelverschuiving land"
+            >
+              i
+            </button>
+            <h2 class="h5 mb-0">Aandeelverschuiving land (procentpunten t.o.v. vorig jaar, per maand)</h2>
+          </div>
+          <div id="info-bpp-country-shift" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Deze grafiek toont per maand de verandering in landaandeel in procentpunten ten opzichte van dezelfde maand vorig jaar, binnen de huidige filters. Positieve waarden betekenen dat een land relatief meer bijdraagt aan het totaal, negatieve waarden dat het aandeel daalt.
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small">Het aandeel reizgers uit een land t.o.v. vorig jaar. Verschillen zijn gegeven in procentpunten.</p>
+        <p class="small text-muted mb-2 d-flex flex-wrap align-items-center gap-2">
+          <span class="fw-semibold">Legenda:</span>
+          <span class="text-nowrap"><span class="country-swatch country-swatch--be" aria-hidden="true"></span>BE</span>
+          <span class="text-nowrap"><span class="country-swatch country-swatch--nl" aria-hidden="true"></span>NL</span>
+          <span class="text-nowrap"><span class="country-swatch country-swatch--other" aria-hidden="true"></span>Overig</span>
+        </p>
+        <div class="bpp-chart-panel">
+          <div id="bppCountryShiftEmpty" class="bpp-chart-empty d-none" role="status"></div>
+          <div class="bpp-chart-wrap"><canvas id="bppChartCountryShift"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-3">
+        <h2 class="h5 mb-2">Reizigers op reis per dag</h2>
+        <p class="text-muted small mb-2">
+          Voor elke kalenderdag tussen vertrek en terugkeer (inclusief beide dagen) wordt weergegeven hoeveel reizigers op die dag op bestemming zijn.
+        </p>
+        <div class="bpp-trip-line-panel mb-3">
+          <div class="bpp-trip-line-nav" id="bppTripLineNav" role="navigation" aria-label="Periode in grafiek reizigers op reis">
+            <button type="button" class="bpp-cal-nav-btn bpp-trip-line-nav__btn" id="bppTripLinePrev" aria-label="Vorige periode">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span class="bpp-trip-line-nav__label" id="bppTripLineNavLabel" aria-live="polite"></span>
+            <button type="button" class="bpp-cal-nav-btn bpp-trip-line-nav__btn" id="bppTripLineNext" aria-label="Volgende periode">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div class="bpp-chart-wrap"><canvas id="bppChartTripLine"></canvas></div>
+        </div>
+        <div class="bpp-cal-heatmap position-relative" id="bppTripHeatmap">
+          <p class="bpp-cal-heatmap__intro small text-muted mb-1" id="bppTripHeatmapIntro"></p>
+          <div class="bpp-cal-heatmap__nav" role="navigation" aria-label="Maanden kalender">
+            <button type="button" class="bpp-cal-nav-btn" id="bppTripCalPrev" aria-label="Eén maand eerder">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span class="bpp-cal-heatmap__nav-label" id="bppTripCalNavLabel" aria-live="polite"></span>
+            <button type="button" class="bpp-cal-nav-btn" id="bppTripCalNext" aria-label="Eén maand later">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div class="bpp-cal-heatmap__months" id="bppTripHeatmapMonths" aria-label="Kalender reizigers op bestemming per dag (twee maanden)"></div>
+          <div class="bpp-cal-tooltip" id="bppTripHeatmapTooltip" role="tooltip" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-3">
+        <h2 class="h5 mb-2">Vertrekdatum-detail (tabel)</h2>
+        <div class="vg-filter-strip mb-2">
+          <div class="vg-filter-row vg-filter-row--secondary">
+            <div class="vg-control vg-control--date">
+              <label class="vg-label" for="bppDepartDateFrom">Datumperiode: van</label>
+              <input id="bppDepartDateFrom" type="date" class="vg-input" aria-label="Startdatum vertrekperiode (vertrekdatum-detail)" />
+            </div>
+            <div class="vg-control vg-control--date">
+              <label class="vg-label" for="bppDepartDateTo">Datumperiode: tot</label>
+              <input id="bppDepartDateTo" type="date" class="vg-input" aria-label="Einddatum vertrekperiode (vertrekdatum-detail)" />
+            </div>
+            <div class="vg-control vg-control--destination">
+              <label class="vg-label" for="bppDepartDestination">Bestemmingsfilter</label>
+              <select id="bppDepartDestination" class="vg-input">
+                <option value="__all__">Alle bestemmingen</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive bpp-depart-table-wrap bpp-table-sticky">
+          <table class="table table-sm table-striped align-middle bpp-sortable-table" id="bppTableDepartures"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-3 d-none" id="bppHolidaySection">
+      <div class="card-body p-3">
+        <h2 class="h5 mb-2">Vakantieperiodes (o.a. Snow Escapes / Roadrebels)</h2>
+        <div class="table-responsive bpp-table-sticky"><table class="table table-sm bpp-sortable-table" id="bppTableHolidays"></table></div>
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-3">
+        <div class="info-popover-block mb-2">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-bpp-matrix-week-destination"
+              aria-label="Uitleg over matrix vertrekweek en bestemming"
+            >
+              i
+            </button>
+            <h2 class="h5 mb-0">Matrix: vertrekweek × <span id="bppMatrixYLabel">bestemming</span></h2>
+          </div>
+          <div
+            id="info-bpp-matrix-week-destination"
+            class="info-popover-panel"
+            data-info-popover-panel
+            role="dialog"
+            aria-label="Uitleg"
+          >
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Deze matrix kruist vertrekweken (kolommen) met bestemmingen en toont per cel het volume binnen de actieve selectie. Als bovenaan een alternatieve dimensie is gekozen, wordt dezelfde weekmatrix op die gekozen as getoond (bijv. accommodatie x periode).
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small" id="bppMatrixHint"></p>
+        <div class="bpp-matrix-week-nav" id="bppMatrixWeekNav" role="navigation" aria-label="Navigatie weken in matrix">
+          <button type="button" class="bpp-cal-nav-btn bpp-matrix-nav__btn" id="bppMatrixWeekPrev" aria-label="Vorige 10 weken tonen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span class="bpp-matrix-week-nav-label" id="bppMatrixWeekRangeLabel" aria-live="polite"></span>
+          <button type="button" class="bpp-cal-nav-btn bpp-matrix-nav__btn" id="bppMatrixWeekNext" aria-label="Volgende 10 weken tonen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="table-responsive bpp-matrix-scroll bpp-table-sticky">
+          <table class="table table-sm table-bordered bpp-matrix-table bpp-matrix-table--interactive" id="bppMatrixTable"></table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal fade" id="bppInsightModal" tabindex="-1" aria-labelledby="bppInsightModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bppInsightModalTitle">Detail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body" id="bppInsightModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bppDepartDetailModal" tabindex="-1" aria-labelledby="bppDepartDetailModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bppDepartDetailModalTitle">Bestemmingen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body" id="bppDepartDetailModalBody"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}?v=st2"></script>
+  <script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms2"></script>
+  <script src="{{ url_for('static', filename='js/bestemmingen.js') }}?v=bp2026504"></script>
+{% endblock %}

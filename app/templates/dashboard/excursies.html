@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Excursies · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/excursies.css') }}?v=ds10" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms1" />
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 excursion-page" id="excursionsPage">
+  <div id="excursionsError" class="alert alert-danger d-none mb-3" role="alert"></div>
+  <div id="excursionsSuccess" class="alert alert-success d-none mb-3" role="status"></div>
+  <div id="excursionsMockBanner" class="alert alert-warning d-none mb-3" role="status"></div>
+  <div id="excursionsEmptyData" class="alert alert-secondary d-none mb-3" role="status"></div>
+  <div id="excursionsDebugBanner" class="alert alert-warning d-none mb-3" role="status"></div>
+
+  <header class="mb-4 d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <h1 class="page-title">Excursies</h1>
+      <p class="page-subtitle mb-0">
+        Excursie-cockpit: volumes, omzet &amp; winst (inclusief bestemming en uptake), verkoopkanalen, timing en
+        betalingen — alleen niet-geannuleerde boekingen.
+      </p>
+    </div>
+    <button type="button" class="btn btn-overzicht-apply excursion-create-btn" id="excCreateBtn">
+      Inkoopprijs toevoegen
+    </button>
+  </header>
+
+  <div class="alert alert-warning finance-profit-rule-notice mb-4" role="note">
+    <div class="fw-semibold mb-2">Let op: onvolledige excursiegegevens</div>
+    <p class="small mb-2">
+      Let op: De winst van een excursie wordt alleen berekend wanneer de inkoopprijs is ingevuld.
+    </p>
+    <p class="small mb-2">
+      Elke excursie is gekoppeld aan een boeking, waardoor er meerdere verkoopprijzen kunnen voorkomen. Momenteel kan er echter slechts één inkoopprijs per jaar worden ingesteld. Zorg er daarom voor dat je een realistisch gemiddelde bepaalt voor dat jaar.
+    </p>
+    <p class="small mb-2">
+      Voeg de inkoopprijzen toe via de knop 'Inkoopprijs toevoegen' zodat de winst correct berekend kan worden.
+    </p>
+    <p class="small mb-0">
+      Momenteel zijn er <strong id="excMissingInkoopExcursiesCount">0</strong> excursies zonder inkoopprijs. Dit betekent dat voor <strong id="excMissingInkoopBoekingenCount">0</strong> excursieboekingen geen winst is meegenomen in de berekening.
+    </p>
+  </div>
+
+  {% include "dashboard/excursies/ExcursionsFilters.html" %}
+  {% include "dashboard/excursies/ExcursionsKPIGrid.html" %}
+
+  <div class="excursion-subtabs card border-0 shadow-sm mb-4">
+    <div class="card-body p-2 p-md-3">
+      <ul class="nav nav-pills flex-wrap gap-1 excursion-main-tabs" id="excursionsMainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="excTabOverview" data-bs-toggle="pill" data-bs-target="#excPaneOverview" type="button" role="tab" aria-controls="excPaneOverview" aria-selected="true">Overzicht</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="excTabRevenue" data-bs-toggle="pill" data-bs-target="#excPaneRevenue" type="button" role="tab" aria-controls="excPaneRevenue" aria-selected="false">Omzet &amp; winst</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="excTabTiming" data-bs-toggle="pill" data-bs-target="#excPaneTiming" type="button" role="tab" aria-controls="excPaneTiming" aria-selected="false">Timing</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="excTabDestinations" data-bs-toggle="pill" data-bs-target="#excPaneDestinations" type="button" role="tab" aria-controls="excPaneDestinations" aria-selected="false">Bestemmingen</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="excTabPay" data-bs-toggle="pill" data-bs-target="#excPanePay" type="button" role="tab" aria-controls="excPanePay" aria-selected="false">Betalingen</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-content excursion-tab-panels mb-4" id="excursionsMainTabContent">
+    <div class="tab-pane fade show active" id="excPaneOverview" role="tabpanel" aria-labelledby="excTabOverview" tabindex="0">
+      {% include "dashboard/excursies/ExcursionsPerformanceSection.html" %}
+      {% include "dashboard/excursies/ExcursionsSalesChannelSection.html" %}
+      {% include "dashboard/excursies/ExcursionsTableSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="excPaneRevenue" role="tabpanel" aria-labelledby="excTabRevenue" tabindex="0">
+      {% include "dashboard/excursies/ExcursionsRevenueSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="excPaneTiming" role="tabpanel" aria-labelledby="excTabTiming" tabindex="0">
+      {% include "dashboard/excursies/ExcursionsTimingSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="excPaneDestinations" role="tabpanel" aria-labelledby="excTabDestinations" tabindex="0">
+      {% include "dashboard/excursies/ExcursionsDestinationsSection.html" %}
+    </div>
+    <div class="tab-pane fade" id="excPanePay" role="tabpanel" aria-labelledby="excTabPay" tabindex="0">
+      {% include "dashboard/excursies/ExcursionsPaymentsSection.html" %}
+    </div>
+  </div>
+
+  {% include "dashboard/excursies/ExcursionManageModal.html" %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script>
+    window.__EXCURSIONS_API_BASE__ = {{ url_for("dashboard.excursies") | tojson }};
+    window.__EXCURSIONS_OPTIONS_URL__ = {{ url_for("dashboard.excursies_options") | tojson }};
+    window.__EXCURSIONS_DATA_URL__ = {{ url_for("dashboard.excursies_data") | tojson }};
+    window.__EXCURSIONS_MANAGE_URL__ = {{ url_for("dashboard.excursies_manage") | tojson }};
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/paginated-bar-chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}?v=st2"></script>
+  <script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms1"></script>
+  <script src="{{ url_for('static', filename='js/excursies.js') }}?v=excursions-v26"></script>
+{% endblock %}

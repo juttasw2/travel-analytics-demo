@@ -1,0 +1,426 @@
+/* Excursies — design system (theme.css) */
+
+.excursion-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+.excursion-section {
+  scroll-margin-top: 1rem;
+}
+
+.excursion-filters-card .form-select,
+.excursion-filters-card .form-control {
+  border-radius: var(--ds-radius-md, 10px);
+}
+
+.excursion-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+/* KPI — lijn uitlijnen met Overzicht-breedte */
+.excursion-kpi-section {
+  padding-left: 0;
+  padding-right: 0;
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.excursion-kpi-grid {
+  display: grid;
+  width: 100%;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 576px) {
+  .excursion-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .excursion-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .excursion-kpi-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.excursion-kpi-grid .excursion-kpi-card {
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  min-width: 0;
+}
+
+.excursion-kpi-card__body {
+  min-height: 5.5rem;
+}
+
+.excursion-kpi-card__body .excursion-kpi-value {
+  margin-top: auto;
+}
+
+.excursion-kpi-card__body--landshare {
+  display: grid !important;
+  grid-template-rows: auto 1fr auto;
+}
+
+.excursion-kpi-card__body--landshare .excursion-kpi-value--split {
+  margin-top: 0;
+  align-self: center;
+  text-align: left;
+}
+
+.excursion-filter-item {
+  flex: 1 1 130px;
+  min-width: 130px;
+}
+
+.excursion-filter-item--wide {
+  flex: 1.8 1 260px;
+  min-width: 250px;
+}
+
+.excursion-filter-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.excursion-filter-inline .form-select {
+  min-width: 0;
+}
+
+.excursion-filter-action-btn {
+  white-space: nowrap;
+}
+
+.excursion-combobox {
+  position: relative;
+}
+
+.excursion-combobox-toggle {
+  padding-right: 2rem;
+}
+
+.excursion-combobox-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: var(--ds-radius-md, 10px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 0.5rem;
+}
+
+.excursion-combobox-search {
+  margin-bottom: 0.35rem;
+}
+
+.excursion-combobox-options {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.excursion-combobox-option {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.excursion-combobox-option:hover,
+.excursion-combobox-option.is-active {
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.excursion-kpi-label {
+  font-size: var(--ds-text-label, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ds-text-muted, #64748b);
+}
+
+.excursion-kpi-card {
+  border-radius: var(--ds-radius-lg, 12px);
+}
+
+.excursion-kpi-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ds-text, #0f172a);
+  line-height: 1.2;
+  margin-top: 0.25rem;
+}
+
+.excursion-kpi-value--split {
+  font-size: 1.05rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.excursion-kpi-value.sp-text--pos {
+  color: var(--ds-success);
+}
+
+.excursion-kpi-value.sp-text--neg {
+  color: var(--ds-danger);
+}
+
+.excursion-kpi-value.sp-text--neutral {
+  color: var(--ds-text-muted);
+}
+
+.excursion-create-btn {
+  white-space: nowrap;
+  min-width: 190px;
+}
+
+.excursion-manage-tabs .nav-link {
+  border-radius: var(--ds-radius-pill, 9999px);
+}
+
+.excursion-kpi-value--orange {
+  color: var(--ds-color-primary, #ea580c);
+}
+
+.excursion-kpi-value--green {
+  color: #16a34a;
+}
+
+.excursion-kpi-value--red {
+  color: #dc2626;
+}
+
+.excursion-kpi-compare {
+  color: var(--ds-text-muted, #64748b);
+  margin-top: 0.35rem;
+  min-height: 1.25rem;
+}
+
+/* Tabellen: sticky header + sorteerbare kop (zelfde patroon als Financiën) */
+.excursion-table-scroll {
+  max-height: min(480px, 58vh);
+  overflow: auto;
+  border-radius: 10px;
+}
+
+.excursion-table-scroll table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background-color: var(--bs-table-bg, #f8f9fa);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+}
+
+.excursion-page table thead th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.excursion-page table thead th[data-sort]:hover {
+  background-color: rgba(241, 245, 249, 0.95);
+}
+
+.excursion-page table thead th.vg-sort-active {
+  color: #0f172a;
+}
+
+.excursion-page table thead th.vg-sort-asc::after,
+.excursion-page table thead th.vg-sort-desc::after {
+  font-size: 0.65rem;
+  opacity: 0.75;
+}
+
+.excursion-page table thead th.vg-sort-asc::after {
+  content: " ↑";
+}
+
+.excursion-page table thead th.vg-sort-desc::after {
+  content: " ↓";
+}
+
+.excursion-table--analysis tbody tr:nth-child(even) td {
+  background-color: rgba(248, 250, 252, 0.65);
+}
+
+.excursion-table--analysis tbody tr:nth-child(even):hover td {
+  background-color: rgba(249, 115, 22, 0.05);
+}
+
+.excursion-kpi-compare.positive {
+  color: #16a34a;
+}
+
+.excursion-kpi-compare.negative {
+  color: #dc2626;
+}
+
+.excursion-inline-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.excursion-inline-metric {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: #fff;
+}
+
+.excursion-inline-metric-label {
+  font-size: 0.78rem;
+  color: var(--ds-text-muted, #64748b);
+  margin-bottom: 0.25rem;
+}
+
+.excursion-inline-metric-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ds-text, #0f172a);
+}
+
+.excursion-destination-picker {
+  width: 100%;
+  max-width: 320px;
+}
+
+.excursion-tab-destination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.excursion-tab-destination-controls .form-select {
+  min-width: 0;
+}
+
+.excursion-perf-chart-nav .btn {
+  min-width: 2rem;
+  padding: 0.15rem 0.45rem;
+  line-height: 1.2;
+}
+
+.excursion-timing-pct-line {
+  font-size: 0.875rem;
+  color: var(--ds-text-secondary, #334155);
+}
+
+.excursion-chart-wrap {
+  position: relative;
+  min-height: 320px;
+  height: 320px;
+}
+
+.excursion-chart-wrap--horizontal {
+  min-height: 340px;
+  height: 340px;
+}
+
+/* Omzet vs winst per bestemming: hoogte wordt door JS gezet (pagina met 1–10 rijen). */
+.excursion-chart-wrap--rev-dest {
+  min-height: 380px;
+}
+
+.excursion-chart-wrap--donut {
+  min-height: 280px;
+  height: 280px;
+  max-width: 100%;
+}
+
+.excursion-chart-card {
+  min-height: 0;
+}
+
+.excursion-table thead th {
+  font-size: 0.78rem;
+  white-space: nowrap;
+  color: var(--ds-text-muted, #64748b);
+}
+
+.excursion-table td {
+  font-size: 0.86rem;
+}
+
+#excDetailTable th,
+#excDetailTable td {
+  text-align: left;
+}
+
+.excursion-table tbody tr:hover {
+  background: rgba(249, 115, 22, 0.04);
+}
+
+.excursion-num-negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.excursion-main-tabs .nav-link {
+  border-radius: var(--ds-radius-pill, 9999px);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ds-text-secondary, #334155);
+  padding: 0.45rem 1rem;
+}
+
+.excursion-main-tabs .nav-link:hover {
+  background: var(--ds-bg-hover, #f1f5f9);
+  color: var(--ds-text, #0f172a);
+}
+
+.excursion-main-tabs .nav-link.active {
+  background: var(--ds-color-primary-soft, rgba(249, 115, 22, 0.12));
+  color: var(--ds-color-primary, #ea580c);
+  font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+  .excursion-filter-item,
+  .excursion-filter-item--wide {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  .excursion-filter-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .excursion-tab-destination-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .excursion-chart-wrap,
+  .excursion-chart-wrap--horizontal {
+    min-height: 260px;
+    height: 260px;
+  }
+
+  .excursion-chart-wrap--donut {
+    min-height: 240px;
+    height: 240px;
+  }
+}

@@ -1,0 +1,70 @@
+<div class="col-12 col-lg-6">
+  <div
+    class="card border-0 bt-kpi h-100 bt-day-heatmap-card{% if cardSuffix == 'Right' %} bt-day-heatmap-card--previous{% endif %}"
+    data-heatmap-card="{{ cardSuffix }}"
+  >
+    <div class="card-body">
+      <div class="bt-day-heatmap__top d-flex flex-wrap align-items-start gap-2 mb-2">
+        <div>
+          <div class="small text-muted mb-1">Jaar {% if cardSuffix == "Left" %}(links){% else %}(rechts){% endif %}</div>
+          <h3 class="h5 mb-0" id="btMonthHeatmapYear{{ cardSuffix }}">—</h3>
+          <div class="text-muted small" id="btMonthHeatmapMonthLabel{{ cardSuffix }}">—</div>
+        </div>
+      </div>
+
+      <div class="bt-day-heatmap-kpi-row row g-2 mb-3">
+        <div class="col-6 col-md-3">
+          <div class="bt-day-heatmap-kpi">
+            <div class="bt-day-heatmap-kpi__label">Boekingen</div>
+            <div id="btMonthHeatmapStatBookings{{ cardSuffix }}" class="bt-day-heatmap-kpi__value">—</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="bt-day-heatmap-kpi">
+            <div class="bt-day-heatmap-kpi__label">Reizigers (gem./dag)</div>
+            <div id="btMonthHeatmapStatTravellers{{ cardSuffix }}" class="bt-day-heatmap-kpi__value">—</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="bt-day-heatmap-kpi">
+            <div class="bt-day-heatmap-kpi__label">Gem. pax/boeking</div>
+            <div id="btMonthHeatmapStatPaxBooking{{ cardSuffix }}" class="bt-day-heatmap-kpi__value">—</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="bt-day-heatmap-kpi">
+            <div class="bt-day-heatmap-kpi__label">Piekdag (KPI)</div>
+            <div id="btMonthHeatmapPeakValue{{ cardSuffix }}" class="bt-day-heatmap-kpi__value">—</div>
+            <div id="btMonthHeatmapPeakLabel{{ cardSuffix }}" class="bt-day-heatmap-kpi__sub">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bt-day-heatmap-wrap" id="btDayHeatmapWrap{{ cardSuffix }}">
+        <div class="bt-day-heatmap-weekdays" aria-hidden="true">
+          <span>MA</span><span>DI</span><span>WO</span><span>DO</span><span>VR</span><span>ZA</span><span>ZO</span>
+        </div>
+        <div
+          class="bt-day-heatmap-grid"
+          id="btDayHeatmapGrid{{ cardSuffix }}"
+          role="grid"
+          aria-label="Maand heatmap {{ cardSuffix }}"
+        ></div>
+
+        <div
+          class="bt-day-heatmap-tooltip"
+          id="btDayHeatmapTooltip{{ cardSuffix }}"
+          role="tooltip"
+          aria-hidden="true"
+        ></div>
+
+        <div class="bt-day-heatmap-empty d-none" id="btDayHeatmapEmpty{{ cardSuffix }}">
+          Geen data voor deze selectie.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

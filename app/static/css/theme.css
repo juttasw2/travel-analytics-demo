@@ -1,0 +1,505 @@
+/**
+ * TravelAnalytics — design system (tokens + app shell)
+ * Load after Bootstrap; before main.css
+ */
+
+:root {
+  /* Typography */
+  --ds-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --ds-font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+
+  --ds-text-page: 1.5rem;
+  --ds-text-page-weight: 600;
+  --ds-text-page-tracking: -0.02em;
+
+  --ds-text-section: 1.0625rem;
+  --ds-text-section-weight: 600;
+
+  --ds-text-card: 0.9375rem;
+  --ds-text-card-weight: 600;
+
+  --ds-text-body: 0.875rem;
+  --ds-text-label: 0.75rem;
+  --ds-text-caption: 0.8125rem;
+
+  /* Layout */
+  --ds-sidebar-width: 260px;
+  --ds-content-max-width: 1600px;
+  --ds-main-padding-x: 1.5rem;
+  --ds-main-padding-x-xl: 2.5rem;
+  --ds-main-padding-y: 1.5rem;
+  --ds-main-padding-y-xl: 1.75rem;
+
+  --ds-space-xs: 0.25rem;
+  --ds-space-sm: 0.5rem;
+  --ds-space-md: 0.75rem;
+  --ds-space-lg: 1rem;
+  --ds-space-xl: 1.5rem;
+  --ds-space-2xl: 2rem;
+
+  /* Radii */
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 10px;
+  --ds-radius-lg: 12px;
+  --ds-radius-pill: 9999px;
+
+  /* Brand & neutrals */
+  --ds-color-primary: #ea580c;
+  --ds-color-primary-hover: #c2410c;
+  --ds-color-primary-active: #9a3412;
+  --ds-color-primary-soft: rgba(249, 115, 22, 0.12);
+  --ds-color-primary-border: rgba(249, 115, 22, 0.35);
+
+  /* Country palette (BE/NL must stay fixed across all charts) */
+  --ds-country-be: #c2410c; /* BE = donker oranje */
+  --ds-country-be-soft: rgba(194, 65, 12, 0.18);
+  --ds-country-be-hover: #9a3412;
+  --ds-country-nl: #f59e0b; /* NL = licht oranje */
+  --ds-country-nl-soft: rgba(245, 158, 11, 0.2);
+  --ds-country-nl-hover: #d97706;
+
+  /* Aliassen voor .country-swatch (theme) */
+  --ds-color-country-be: var(--ds-country-be);
+  --ds-color-country-nl: var(--ds-country-nl);
+  --ds-color-country-be-hover: var(--ds-country-be-hover);
+  --ds-color-country-nl-hover: var(--ds-country-nl-hover);
+  --ds-country-swatch-size: 0.5rem;
+
+  --ds-bg-page: #f6f7fb;
+  --ds-bg-surface: #ffffff;
+  --ds-bg-muted: #f8fafc;
+  --ds-bg-hover: #f1f5f9;
+
+  --ds-border: #e2e8f0;
+  --ds-border-strong: #cbd5e1;
+  --ds-border-sidebar: #eef0f4;
+
+  --ds-text: #0f172a;
+  --ds-text-secondary: #334155;
+  --ds-text-muted: #64748b;
+  --ds-text-subtle: #94a3b8;
+
+  --ds-success: #15803d;
+  --ds-danger: #b91c1c;
+  --ds-warning: #b45309;
+
+  /* Elevation */
+  --ds-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --ds-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --ds-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  /* Witte dashboard-cards: lichte rand + zachte diepte (klassiek panel) */
+  --ds-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.07);
+
+  /* Controls */
+  --ds-control-height: 38px;
+  --ds-btn-height: 38px;
+  --ds-focus-ring: 0 0 0 3px rgba(249, 115, 22, 0.22);
+}
+
+/* Bootstrap 5 variable bridge (light) */
+:root,
+[data-bs-theme="light"] {
+  --bs-body-font-family: var(--ds-font-sans);
+  --bs-body-bg: var(--ds-bg-page);
+  --bs-body-color: var(--ds-text);
+  --bs-primary: var(--ds-color-primary);
+  --bs-primary-rgb: 234, 88, 12;
+  --bs-border-color: var(--ds-border);
+  --bs-border-radius: var(--ds-radius-md);
+  --bs-link-color: var(--ds-color-primary);
+  --bs-link-hover-color: var(--ds-color-primary-hover);
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.country-swatch {
+  display: inline-block;
+  width: var(--ds-country-swatch-size);
+  height: var(--ds-country-swatch-size);
+  border-radius: 999px;
+  margin-right: 0.28rem;
+  vertical-align: 0.12em;
+  flex-shrink: 0;
+}
+
+.country-swatch--be {
+  background-color: var(--ds-color-country-be);
+}
+
+.country-swatch--nl {
+  background-color: var(--ds-color-country-nl);
+}
+
+body.app-body {
+  font-family: var(--ds-font-sans);
+  background: var(--ds-bg-page);
+  color: var(--ds-text);
+  font-size: var(--ds-text-body);
+  line-height: 1.5;
+}
+
+/* ----- App shell ----- */
+.sidebar.app-sidebar {
+  width: var(--ds-sidebar-width);
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--ds-bg-surface);
+  border-right: 1px solid var(--ds-border-sidebar);
+  padding: var(--ds-space-lg);
+}
+
+.app-main {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: var(--ds-content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 0;
+  background: var(--ds-bg-page);
+  padding: var(--ds-main-padding-y) var(--ds-main-padding-x);
+}
+
+@media (min-width: 1200px) {
+  .app-main {
+    padding: var(--ds-main-padding-y-xl) var(--ds-main-padding-x-xl);
+  }
+}
+
+/* ----- Typography (pages) ----- */
+.page-title {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-page);
+  font-weight: var(--ds-text-page-weight);
+  letter-spacing: var(--ds-text-page-tracking);
+  color: var(--ds-text);
+  line-height: 1.25;
+  margin-bottom: var(--ds-space-sm);
+}
+
+.page-subtitle {
+  font-size: var(--ds-text-body);
+  color: var(--ds-text-muted);
+  line-height: 1.45;
+  margin-top: 0;
+  max-width: 52rem;
+}
+
+.ds-section-title {
+  font-size: var(--ds-text-section);
+  font-weight: var(--ds-text-section-weight);
+  color: var(--ds-text);
+  line-height: 1.35;
+  margin-bottom: var(--ds-space-md);
+}
+
+.ds-card-title {
+  font-size: var(--ds-text-card);
+  font-weight: var(--ds-text-card-weight);
+  color: var(--ds-text);
+  line-height: 1.35;
+}
+
+.ds-label {
+  font-size: var(--ds-text-label);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ds-text-muted);
+}
+
+.ds-caption {
+  font-size: var(--ds-text-caption);
+  color: var(--ds-text-muted);
+}
+
+/* ----- Brand block (sidebar header) ----- */
+.brand-title {
+  font-family: var(--ds-font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ds-text);
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--ds-text-subtle);
+  line-height: 1.3;
+}
+
+/* ----- Sidebar navigation ----- */
+.sidebar-nav-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ds-text-subtle);
+  padding: 0 0.875rem;
+  margin-bottom: var(--ds-space-sm);
+}
+
+.sidebar-nav-divider {
+  border-top: 1px solid var(--ds-border-sidebar);
+  margin-top: var(--ds-space-lg);
+  padding-top: var(--ds-space-lg);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-sm);
+  padding: 0.5rem 0.875rem;
+  margin: 0.125rem 0;
+  border-radius: var(--ds-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ds-text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-link:hover {
+  background: var(--ds-bg-hover);
+  color: var(--ds-text);
+}
+
+.sidebar-link-active {
+  background: var(--ds-color-primary-soft);
+  color: var(--ds-text);
+  border-left-color: var(--ds-color-primary);
+  font-weight: 600;
+}
+
+.sidebar-link-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-text-muted);
+}
+
+.sidebar-link-active .sidebar-link-icon {
+  color: var(--ds-color-primary);
+}
+
+.sidebar-icon-duo {
+  width: 20px;
+  gap: 1px;
+}
+
+.sidebar-icon-duo svg {
+  flex-shrink: 0;
+}
+
+/* ----- Surfaces: dashboard cards (witte panelen op --ds-bg-page) ----- */
+.app-main .card.border-0.shadow-sm:not(.shadow-none),
+.app-main .card.ds-shadow:not(.shadow-none) {
+  background-color: var(--ds-bg-surface) !important;
+  border: 1px solid var(--ds-border) !important;
+  box-shadow: var(--ds-shadow-card) !important;
+  border-radius: var(--ds-radius-lg) !important;
+}
+
+/* KPI’s zonder shadow-sm (o.a. Boekingsgedrag: .bt-kpi--accent) */
+.app-main .bt-kpi.card.border-0.bt-kpi--accent {
+  box-shadow: var(--ds-shadow-card) !important;
+}
+
+/* ----- Tables (app main) ----- */
+.app-main .table {
+  --bs-table-border-color: var(--ds-border);
+  font-size: var(--ds-text-body);
+}
+
+.app-main .table thead th {
+  font-size: var(--ds-text-caption);
+  font-weight: 600;
+  color: var(--ds-text-muted);
+  border-bottom-color: var(--ds-border);
+}
+
+.app-main .table tbody tr:hover {
+  background-color: rgba(249, 115, 22, 0.04);
+}
+
+/* ----- Form controls ----- */
+.app-main .form-control,
+.app-main .form-select {
+  min-height: var(--ds-control-height);
+  border-radius: var(--ds-radius-md);
+  border-color: var(--ds-border-strong);
+  font-size: var(--ds-text-body);
+}
+
+.app-main .form-control:focus,
+.app-main .form-select:focus,
+.app-main .form-check-input:focus {
+  border-color: var(--ds-color-primary);
+  box-shadow: var(--ds-focus-ring);
+  outline: 0;
+}
+
+.app-main .form-label {
+  font-size: var(--ds-text-label);
+  font-weight: 500;
+  color: var(--ds-text-secondary);
+  margin-bottom: var(--ds-space-xs);
+}
+
+/* ----- Buttons ----- */
+.app-main .btn {
+  border-radius: var(--ds-radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.4rem 1rem;
+  min-height: var(--ds-btn-height);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.app-main .btn-sm {
+  min-height: 2rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.app-main .btn-primary {
+  background-color: var(--ds-color-primary);
+  border-color: var(--ds-color-primary);
+  color: #fff;
+}
+
+.app-main .btn-primary:hover {
+  background-color: var(--ds-color-primary-hover);
+  border-color: var(--ds-color-primary-hover);
+  color: #fff;
+}
+
+.app-main .btn-primary:focus-visible {
+  box-shadow: var(--ds-focus-ring);
+}
+
+.app-main .btn-outline-secondary {
+  border-color: var(--ds-border-strong);
+  color: var(--ds-text-secondary);
+}
+
+.app-main .btn-outline-secondary:hover {
+  background: var(--ds-bg-hover);
+  border-color: var(--ds-text-muted);
+  color: var(--ds-text);
+}
+
+/* Alerts */
+.app-main .alert {
+  border-radius: var(--ds-radius-md);
+  font-size: var(--ds-text-body);
+}
+
+/* Charts live inside same card language */
+.app-main canvas {
+  max-width: 100%;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}
+
+/* Login & registratie (auth/login.html, auth/register.html) */
+body.app-body.login-page {
+  min-height: 100vh;
+  /* Pagina licht grijs: het kaart-blok (.login-card) valt zo duidelijk af als wit vak */
+  background: var(--ds-bg-page);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-card {
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-card);
+  background: #ffffff;
+}
+
+.login-page .card-body {
+  padding: 1.5rem;
+}
+
+.login-page .card-body > h1,
+.login-page .card-body .h5 {
+  color: var(--ds-text);
+}
+
+.login-page p.text-muted {
+  color: var(--ds-text-muted) !important;
+}
+
+.login-page a {
+  color: var(--ds-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.login-page a:hover {
+  color: #000000;
+}
+
+.login-page .btn-primary {
+  min-height: var(--ds-btn-height);
+  border-radius: var(--ds-radius-md);
+  font-weight: 600;
+  background-color: var(--ds-color-primary);
+  border-color: var(--ds-color-primary);
+  color: #fff;
+}
+
+.login-page .btn-primary:hover {
+  background-color: var(--ds-color-primary-hover);
+  border-color: var(--ds-color-primary-hover);
+  color: #fff;
+}
+
+.login-page .btn-primary:focus-visible {
+  box-shadow: var(--ds-focus-ring);
+}
+
+.login-page .form-control {
+  min-height: var(--ds-control-height);
+  border-radius: var(--ds-radius-md);
+  font-size: var(--ds-text-body);
+  background-color: #ffffff;
+  border-color: var(--ds-border);
+}
+
+.login-page .form-control:focus {
+  border-color: var(--ds-color-primary);
+  box-shadow: var(--ds-focus-ring);
+  outline: 0;
+}
+
+.login-page .form-label {
+  font-size: var(--ds-text-label);
+  font-weight: 500;
+  color: var(--ds-text);
+}
+
+.login-page .form-text {
+  color: var(--ds-text-muted);
+}

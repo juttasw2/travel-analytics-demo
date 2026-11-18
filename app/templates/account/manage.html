@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Account beheren · TravelAnalytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+  <div class="mb-4">
+    <h1 class="page-title">Account beheren</h1>
+    <p class="page-subtitle">Beheer je eigen wachtwoord{% if can_create_users %} of maak een nieuw gebruikersaccount aan{% endif %}.</p>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body p-4 d-flex flex-column">
+          <h2 class="h6 fw-semibold mb-2">Wachtwoord wijzigen</h2>
+          <p class="text-muted small mb-3 flex-grow-1">
+            Stel een nieuw wachtwoord in voor je eigen account. Je huidige wachtwoord blijft nodig om de wijziging te bevestigen.
+          </p>
+          <a href="{{ url_for('dashboard.change_password') }}" class="btn btn-primary align-self-start">
+            Wachtwoord wijzigen
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% if can_create_users %}
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4 d-flex flex-column">
+            <h2 class="h6 fw-semibold mb-2">Nieuw account aanmaken</h2>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Maak een nieuw gebruikersaccount aan met de rol VERSIE_A of VERSIE_B. Het account heeft direct toegang; bij eerste login wordt MFA via Microsoft Authenticator ingesteld.
+            </p>
+            <a href="{{ url_for('dashboard.admin_create_user') }}" class="btn btn-primary align-self-start">
+              Nieuw account aanmaken
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

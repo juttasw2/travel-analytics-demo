@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Pre boekingen · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pre_boekingen.css') }}?v=preboekingen-v1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms2" />
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 pre-boekingen-page" id="preBoekingenPagina">
+  <div id="preBoekingenMelding" class="alert d-none" role="alert"></div>
+  <header class="mb-4">
+    <h1 class="page-title">Pre boekingen</h1>
+    <p class="page-subtitle mb-0">Analyseer vluchtallotments op capaciteit, bezetting en planning.</p>
+  </header>
+
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body p-2 p-md-3">
+      <ul class="nav nav-pills pre-tabs" id="preBoekingenTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-vluchten" data-bs-toggle="pill" data-bs-target="#paneel-vluchten" type="button" role="tab">Vluchten</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-accommodaties" data-bs-toggle="pill" data-bs-target="#paneel-accommodaties" type="button" role="tab">Accommodaties</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="paneel-vluchten" role="tabpanel">
+      <section class="card border-0 shadow-sm mb-3" id="vluchtUploadKaart">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+            <div>
+              <h2 class="h6 mb-2">Nieuwe vluchtallotments uploaden</h2>
+              <p class="text-muted mb-0">Uploaden verloopt centraal via de Uploaden-pagina.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btnOpenVluchtUploadInfo" type="button">Nieuwe vluchtallotments uploaden</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm mb-3" id="vluchtFilters">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <div>
+              <h2 class="h6 mb-1">Filters</h2>
+              <p class="text-muted small mb-0">Filter op jaar, aankomst/vertrek en vluchtkenmerken.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary btn-sm" id="btnFiltersToepassen">Toepassen</button>
+              <button class="btn btn-outline-secondary btn-sm" id="btnFiltersWissen">Filters wissen</button>
+            </div>
+          </div>
+          <div class="row g-2 align-items-end">
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Jaar</label><select class="form-select form-select-sm" id="filterJaar" {% if is_versie_b %}disabled{% endif %}>{% if is_versie_b %}<option value="{{ rbac_current_year }}" selected>{{ rbac_current_year }}</option>{% else %}<option value="__all__">Jaar</option>{% endif %}</select></div>
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Aankomst van</label><input class="form-control form-control-sm" type="date" id="filterArrivalVan" /></div>
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Aankomst tot</label><input class="form-control form-control-sm" type="date" id="filterArrivalTot" /></div>
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Maatschappij</label><select class="form-select form-select-sm" id="filterAgency"><option value="__all__">Maatschappij</option></select></div>
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Route</label><select class="form-select form-select-sm" id="filterWay"><option value="__all__">Route</option></select></div>
+            <div class="col-6 col-md-3 col-xl"><label class="form-label small mb-1">Bestemming</label><select class="form-select form-select-sm" id="filterBestemming"><option value="__all__">Bestemming</option></select></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row g-2 mb-3" id="vluchtKpiKaarten"></section>
+
+      <section class="row g-2 mb-3">
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 shadow-sm h-100 pre-grafiek-kaart">
+            <div class="card-body">
+              <h3 class="h6 mb-2">Capaciteit</h3>
+                <div class="pre-chart-donut-wrap">
+                  <canvas id="grafiekCapaciteit"></canvas>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 shadow-sm h-100 pre-grafiek-kaart">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h3 class="h6 mb-0">Capaciteit doorheen de tijd</h3>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-secondary btn-sm py-0 px-2" id="btnCapaciteitVorige" type="button" aria-label="Vorige periode">←</button>
+                  <span class="small text-muted" id="capaciteitPeriodeLabel">-</span>
+                  <button class="btn btn-outline-secondary btn-sm py-0 px-2" id="btnCapaciteitVolgende" type="button" aria-label="Volgende periode">→</button>
+                </div>
+              </div>
+              <p class="small text-muted mb-2">Gebaseerd op aankomstdatum in de geselecteerde periode.</p>
+              <div class="pre-chart-canvas-wrap pre-chart-canvas-wrap-tijd">
+                <canvas id="grafiekCapaciteitTijd"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm" id="vluchtAllotmentsTabel">
+        <div class="card-body p-0">
+          <div class="px-4 pb-4 pt-3">
+          <div class="pre-table-scroll">
+            <table class="table table-sm align-middle mb-0 pre-tabel">
+              <colgroup>
+                <col style="width: 8%;" />
+                <col style="width: 8%;" />
+                <col style="width: 11%;" />
+                <col style="width: 8%;" />
+                <col style="width: 10%;" />
+                <col style="width: 10%;" />
+                <col style="width: 10%;" />
+                <col style="width: 9%;" />
+                <col style="width: 9%;" />
+                <col style="width: 10%;" />
+                <col style="width: 7%;" />
+                <col style="width: 10%;" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th data-sort="arrival">Aankomst</th>
+                  <th data-sort="departure">Vertrek</th>
+                  <th data-sort="agency">Agentschap</th>
+                  <th data-sort="bestemming">Bestemming</th>
+                  <th data-sort="total_pax">Totaal</th>
+                  <th data-sort="booked_pax">Verkocht</th>
+                  <th data-sort="still_free">Over</th>
+                  <th data-sort="pp_outbound">Prijs heen</th>
+                  <th data-sort="pp_inbound">Prijs terug</th>
+                  <th data-sort="bezetting">Bezetting</th>
+                  <th data-sort="status">Status</th>
+                  <th data-sort="openstaande_kost">Kosten</th>
+                </tr>
+              </thead>
+              <tbody id="vluchtTabelBody"></tbody>
+            </table>
+          </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-2 border-top">
+            <small class="text-muted" id="tabelAantalTekst">0 van 0 allotments weergegeven</small>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm" id="btnMinderWeergeven">Minder weergeven</button>
+              <button class="btn btn-primary btn-sm" id="btnMeerWeergeven">Meer weergeven</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="vluchtDetailDrawer">
+        <div class="offcanvas-header">
+          <h3 class="h6 mb-0">Vlucht detail</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Sluiten"></button>
+        </div>
+        <div class="offcanvas-body" id="vluchtDetailInhoud"></div>
+      </div>
+
+      <div class="modal fade" id="vluchtUploadInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+              <h3 class="h6 mb-0">Verwachte structuur voor Vlucht allotments</h3>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+            </div>
+            <div class="modal-body small">
+              Verplichte kolommen (niet hoofdlettergevoelig): <code>ARRIVAL</code>, <code>DEPARTURE</code>,
+              <code>AGENCY</code>, <code>WAY</code>, <code>TOTAL PAX</code>, <code>BOOKED PAX</code>,
+              <code>STILL FREE</code>, <code>FLIGHT</code>, <code>FLIGHT</code>, <code>PP OUTBOUND</code>, <code>PP INBOUND</code>.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Annuleren</button>
+              <a class="btn btn-primary btn-sm" href="{{ url_for('dashboard.upload', upload_type='vlucht_allotments') }}">Verder naar uploaden</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="paneel-accommodaties" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">Moet nog komen</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms2"></script>
+  <script>
+    window.__PRE_BOEKINGEN_OPTIES_URL__ = {{ url_for("dashboard.pre_boekingen_opties") | tojson }};
+    window.__PRE_BOEKINGEN_DATA_URL__ = {{ url_for("dashboard.pre_boekingen_data") | tojson }};
+    window.__PRE_BOEKINGEN_AUTO_KOPPEL_URL__ = {{ url_for("dashboard.pre_boekingen_auto_koppel") | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/pre_boekingen.js') }}?v=pre-step2"></script>
+{% endblock %}

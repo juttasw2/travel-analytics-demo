@@ -1,0 +1,77 @@
+{# Bestemmingen — omzet/winst per bestemming (globale filters); daarna lokale bestemming + tabel #}
+<div class="excursion-section card border-0 shadow-sm mb-4" id="excursionsDestinationsSection">
+  <div class="card-body p-3 p-lg-4">
+    <div class="mb-4">
+      <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-1">
+        <h2 class="h6 fw-semibold mb-0">Omzet vs winst per bestemming</h2>
+        <div class="d-flex align-items-center gap-2 d-none" id="excRevDestNav">
+          <span class="small text-muted" id="excRevDestPageInfo"></span>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Paginering omzet vs winst per bestemming">
+            <button type="button" class="btn btn-outline-secondary px-2" id="excRevDestPrev" aria-label="Vorige 10 bestemmingen">‹</button>
+            <button type="button" class="btn btn-outline-secondary px-2" id="excRevDestNext" aria-label="Volgende 10 bestemmingen">›</button>
+          </div>
+        </div>
+      </div>
+      <p class="text-muted small mb-2">
+        Gebaseerd op de <strong>algemene filters</strong> bovenaan de pagina (niet op de bestemmingsselector hieronder).
+        Bestemmingen zonder omzet én zonder winst worden niet getoond.
+      </p>
+      <div class="card border bg-light excursion-chart-card">
+        <div class="card-body p-3">
+          <div
+            class="excursion-chart-wrap excursion-chart-wrap--horizontal excursion-chart-wrap--rev-dest"
+            id="excRevDestChartWrap"
+          >
+            <canvas id="excChartRevDest" aria-label="Omzet en winst per bestemming"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+      <div>
+        <h2 class="h6 fw-semibold mb-1">Bestemmingen</h2>
+        <p class="text-muted small mb-0">
+          Deze selector is leidend binnen dit tabblad en overschrijft hier de algemene filter
+          <strong>Bestemming</strong>. Excursies in de tabel zijn uniek per <strong>naam + bestemming</strong> van de regel.
+        </p>
+      </div>
+      <div class="excursion-destination-picker">
+        <label class="form-label small text-muted mb-1" for="excDestTabSelect">Bestemming (tab)</label>
+        <div class="excursion-tab-destination-controls">
+          <select id="excDestTabSelect" class="form-select form-select-sm" aria-label="Bestemming in tab Bestemmingen"></select>
+          <button type="button" class="btn btn-overzicht-apply btn-sm" id="excDestTabApplyBtn">
+            Bestemming toepassen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border bg-light mb-3">
+      <div class="card-body p-3">
+        <div class="small text-muted mb-1">Geselecteerde bestemming</div>
+        <div class="fw-semibold" id="excDestTabCurrent">—</div>
+      </div>
+    </div>
+
+    <div class="table-responsive rounded border bg-white excursion-table-scroll">
+      <table class="table table-sm table-hover align-middle excursion-table excursion-table--analysis mb-0" id="excDestTable">
+        <thead class="table-light">
+          <tr>
+            <th data-sort="name" data-sort-type="text">Excursie</th>
+            <th class="text-end" data-sort="bookings" data-sort-type="number">Aantal boekingen</th>
+            <th class="text-end" data-sort="pax" data-sort-type="number">Totaal aantal pax</th>
+            <th class="text-end" data-sort="avgVerkoop" data-sort-type="number">Verkoopprijs</th>
+            <th class="text-end" data-sort="avgInkoop" data-sort-type="number">Inkoopprijs</th>
+            <th class="text-end" data-sort="omzet" data-sort-type="number">Totale omzet</th>
+            <th class="text-end" data-sort="winst" data-sort-type="number">Totale winst</th>
+          </tr>
+        </thead>
+        <tbody id="excDestTableBody"></tbody>
+      </table>
+    </div>
+    <p class="text-muted small mt-2 mb-0 d-none" id="excDestTableEmpty">
+      Geen excursies gevonden voor deze bestemming binnen de huidige filters.
+    </p>
+  </div>
+</div>

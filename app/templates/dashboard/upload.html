@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Excel-upload · TravelAnalytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h1 class="page-title">Excel-upload</h1>
+    <p class="page-subtitle">Upload Excel-bestanden met boekingsdata of vluchtallotments.</p>
+  </div>
+
+  <!-- Upload card -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      {% if preselect_upload_type == 'vlucht_allotments' %}
+        <div class="alert alert-warning border-0 mb-3">
+          <div class="fw-semibold mb-1">Verwachte structuur voor Vlucht allotments</div>
+          <div class="small">
+            Verplichte kolommen (niet hoofdlettergevoelig): <code>ARRIVAL</code>, <code>DEPARTURE</code>, <code>AGENCY</code>,
+            <code>WAY</code>, <code>TOTAL PAX</code>, <code>BOOKED PAX</code>, <code>STILL FREE</code>, <code>FLIGHT</code>,
+            <code>FLIGHT</code>, <code>PP OUTBOUND</code>, <code>PP INBOUND</code>.
+          </div>
+        </div>
+      {% endif %}
+
+      <div
+        id="upload-dropzone"
+        class="text-center p-5 upload-dropzone"
+      >
+        <div class="mb-3">
+          <div class="upload-dropzone-icon-wrap">
+            <svg width="28" height="28" stroke="#ea580c" fill="none" stroke-width="1.8">
+              <path d="M12 16V4" />
+              <path d="M7.5 8.5L12 4l4.5 4.5" />
+              <path d="M5 18v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1" />
+            </svg>
+          </div>
+        </div>
+
+        <h5 class="fw-semibold mb-2">Start een nieuwe upload</h5>
+        <p class="text-muted mb-3">Kies eerst het uploadtype, daarna pas het Excelbestand.</p>
+
+        <form
+          id="upload-form"
+          action="{{ url_for('dashboard.upload') }}"
+          method="post"
+          enctype="multipart/form-data"
+          data-upload-status-url-template="{{ upload_status_url_template or '' }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input id="file-input" type="file" name="file" class="d-none" accept=".xlsx" />
+          <input id="upload-type-input" type="hidden" name="upload_type" value="" />
+          <button type="button" class="btn px-4 py-2 upload-select-btn" id="btnOpenUploadFlow">Upload Excel</button>
+        </form>
+
+        <p class="text-muted mt-3 small">
+          Alleen `.xlsx` (max. {{ upload_max_size_mb or 100 }}MB per bestand)
+        </p>
+
+        <div id="upload-feedback" class="mt-3 upload-feedback-panel"></div>
+
+        <!-- Progress -->
+        <div id="upload-progress" class="mt-3 d-none">
+          <div class="progress upload-progress-thin">
+            <div id="upload-progress-bar" class="progress-bar"></div>
+          </div>
+          <div id="upload-progress-text" class="small text-muted mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Errors -->
+  {% if errors %}
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- Uploaded files -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+
+      <div class="p-4 border-bottom">
+        <h6 class="mb-0 fw-semibold">Eerder geüploade bestanden</h6>
+      </div>
+
+      {% if uploads and uploads|length > 0 %}
+        <div class="table-responsive">
+          <table class="table mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Bestand</th>
+                <th>Type</th>
+                <th>Uploaddatum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in uploads %}
+                <tr>
+                  <td class="fw-medium">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="upload-file-icon">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                      </div>
+                      <span>{{ u.bestandsnaam }}</span>
+                    </div>
+                  </td>
+                  <td><span class="badge text-bg-light">{{ u.type }}</span></td>
+                  <td class="text-muted small">{{ u.geupload_op_formatted }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-4 text-muted">
+          Nog geen bestanden geüpload.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalTitel">Kies uploadtype</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+      </div>
+      <div class="modal-body">
+        <div class="small text-muted mb-3" id="uploadStapIndicator">Stap 1 van 3</div>
+        <div id="uploadStapType">
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <button class="btn w-100 text-start border rounded-3 p-3 upload-type-card" data-type="boekingen" type="button">
+                <div class="fw-semibold">Boekingen</div>
+                <div class="small text-muted">Upload boekingsdata met reizigers, vluchten, financiën, excursies, enz.</div>
+              </button>
+            </div>
+            <div class="col-12 col-md-6">
+              <button class="btn w-100 text-start border rounded-3 p-3 upload-type-card" data-type="vlucht_allotments" type="button">
+                <div class="fw-semibold">Vlucht allotments</div>
+                <div class="small text-muted">Upload beschikbare vluchtcapaciteit met het vaste 10-kolommen template.</div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="uploadStapBestand" class="d-none">
+          <div class="mb-2 fw-semibold" id="uploadBestandTitel">Upload bestand</div>
+          <div class="alert alert-warning border-0 small d-none" id="uploadFlowAllotmentInfo">
+            Verplichte kolommen: <code>ARRIVAL</code>, <code>DEPARTURE</code>, <code>AGENCY</code>, <code>WAY</code>,
+            <code>TOTAL PAX</code>, <code>BOOKED PAX</code>, <code>STILL FREE</code>, <code>FLIGHT</code>, <code>FLIGHT</code>,
+            <code>PP OUTBOUND</code>, <code>PP INBOUND</code>.
+          </div>
+          <label class="btn btn-outline-secondary">
+            Bestand kiezen
+            <input id="uploadFlowFileInput" type="file" class="d-none" accept=".xlsx" />
+          </label>
+          <div class="small text-muted mt-2" id="uploadFlowFileNaam">Nog geen bestand geselecteerd</div>
+        </div>
+        <div id="uploadStapVerwerken" class="d-none">
+          <div class="mb-2">Geselecteerd type: <strong id="uploadTypeBevestiging">-</strong></div>
+          <div>Bestand: <strong id="uploadBestandBevestiging">-</strong></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" id="btnUploadTerug">Terug</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
+        <button type="button" class="btn btn-primary" id="btnUploadVolgende">Volgende</button>
+        <button type="button" class="btn btn-primary d-none" id="btnUploadVerwerken">Uploaden en verwerken</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script id="uploadPreselectTypeData" type="application/json">{{ preselect_upload_type | default('') | tojson }}</script>
+  <script>
+    (function () {
+      const preselectTypeNode = document.getElementById('uploadPreselectTypeData');
+      window.__UPLOAD_PRESELECT_TYPE__ = preselectTypeNode
+        ? JSON.parse(preselectTypeNode.textContent || "\"\"")
+        : "";
+    })();
+  </script>
+  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

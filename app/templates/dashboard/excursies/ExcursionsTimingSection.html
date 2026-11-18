@@ -1,0 +1,58 @@
+{# SECTIE 4 — Timing #}
+<div class="excursion-section card border-0 shadow-sm mb-4" id="excursionsTimingSection">
+  <div class="card-body p-3 p-lg-4">
+    <div class="info-popover-block mb-1">
+      <div class="info-popover-head">
+        <button
+          type="button"
+          class="info-popover-trigger"
+          data-info-popover-trigger="info-exc-timing"
+          aria-label="Uitleg over timing van excursieboekingen"
+        >
+          i
+        </button>
+        <h2 class="h6 fw-semibold mb-0">Timing</h2>
+      </div>
+      <div id="info-exc-timing" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+        <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+        <p class="info-popover-text">
+          Timing wordt berekend als het aantal dagen tussen vertrekdatum en datum_toegevoegd van de excursieregel. Regels "tijdens boeking" worden apart geclassificeerd en niet dubbel geteld in de overige tijdsbuckets.
+        </p>
+      </div>
+    </div>
+    <p class="text-muted small mb-3">
+      Dagen vóór vertrek = vertrekdatum − <code>datum_toegevoegd</code> (per regel). De staaf
+      <strong>Tijdens boeking</strong> telt regels waarbij <code>boekingsdatum</code> (boeking) dezelfde dag is als
+      <code>datum_toegevoegd</code> (excursieregel). Die regels tellen niet dubbel in de tijd-buckets. Ontbrekende datums worden niet geschat.
+    </p>
+    <div class="row g-3 align-items-stretch">
+      <div class="col-12 col-md-4">
+        <div class="card border bg-light h-100">
+          <div class="card-body p-3">
+            <div class="excursion-kpi-label">Gem. dagen voor vertrek (bekende data)</div>
+            <div class="excursion-kpi-value excursion-kpi-value--orange" id="excTimingAvgDays">—</div>
+            <div class="mt-2 pt-2 border-top border-light-subtle" id="excTimingChannelPctBlock" aria-label="Verdeling verkoopkanaal">
+              <div class="excursion-timing-pct-line mb-1" id="excTimingPctBooking">Booking sales: —</div>
+              <div class="excursion-timing-pct-line mb-1" id="excTimingPctLocal">Local sales: —</div>
+              <div class="excursion-timing-pct-line mb-1" id="excTimingOmzetBooking">Totale omzet booking sales: —</div>
+              <div class="excursion-timing-pct-line mb-0" id="excTimingOmzetLocal">Totale omzet local sales: —</div>
+            </div>
+            <p class="text-muted small mt-2 mb-0 d-none" id="excTimingSalesMix" aria-hidden="true"></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-8">
+        <div class="card border bg-light excursion-chart-card h-100">
+          <div class="card-body p-3">
+            <div class="small fw-semibold mb-2">Boekingen in tijd vóór vertrek (incl. local sales, tijdens boeking)</div>
+            <div class="excursion-chart-wrap">
+              <canvas id="excChartTimingBuckets" aria-label="Timing buckets"></canvas>
+            </div>
+            <p class="text-muted small mb-0 mt-2" id="excTimingLocalSummary">Local sales: —</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-muted small mt-2 mb-0 d-none" id="excTimingEmpty">Geen timingdata (<code>datum_toegevoegd</code> ontbreekt).</p>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+{# SuppliersSection — leveranciers (4 filters: bestemming, leverancier, van/tot vertrekdatum) #}
+<section class="finance-section card border-0 shadow-sm mb-4" id="finSuppliersSection" data-finance-section="suppliers">
+  <div class="card-body p-3 p-lg-4">
+    <div class="info-popover-block mb-1">
+      <div class="info-popover-head">
+        <button
+          type="button"
+          class="info-popover-trigger"
+          data-info-popover-trigger="info-fin-suppliers"
+          aria-label="Uitleg over leveranciers"
+        >
+          i
+        </button>
+        <h2 class="h5 fw-semibold mb-0">Leveranciers</h2>
+      </div>
+      <div id="info-fin-suppliers" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+        <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+        <p class="info-popover-text">
+          Deze tabel aggregeert prestaties per combinatie van bestemming en leverancier op basis van dezelfde boekingenpool als de rest van Financiën. Omzet, winst en marge worden dus met dezelfde rekenlogica berekend en blijven onderling vergelijkbaar.
+        </p>
+      </div>
+    </div>
+    <p class="text-muted small mb-4">
+      Overzicht per bestemming en leverancier. Zelfde boekingenpool en winstberekening als de rest van Financiën.
+      Filter <strong>Van datum</strong> / <strong>Tot datum</strong> op <strong>vertrekdatum</strong> (periode waarin de reis doorgaat; leeg = geen extra beperking).
+    </p>
+
+    <div class="border rounded-3 p-3 p-lg-4 bg-light">
+      <div class="row g-2 g-md-3 align-items-end fin-sup-filters">
+        <div class="col-12 col-sm-6 col-xl-3">
+          <label class="form-label small text-muted mb-1" for="finSupFilterDest">Bestemming</label>
+          <select class="form-select form-select-sm" id="finSupFilterDest">
+            <option value="">Alle</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <label class="form-label small text-muted mb-1" for="finSupFilterLev">Leverancier</label>
+          <input type="text" class="form-control form-control-sm" id="finSupFilterLev" placeholder="Filter…" autocomplete="off" />
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <label class="form-label small text-muted mb-1" for="finSupDateFrom">Van datum</label>
+          <input type="date" class="form-control form-control-sm" id="finSupDateFrom" autocomplete="off" />
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <label class="form-label small text-muted mb-1" for="finSupDateTo">Tot datum</label>
+          <input type="date" class="form-control form-control-sm" id="finSupDateTo" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="table-responsive finance-suppliers-table-wrap mt-3">
+        <table class="table table-sm table-hover align-middle finance-table finance-suppliers-table finance-table--analysis mb-0" id="finSupTable">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="fin-sup-th-expand"><span class="visually-hidden">Open rij</span></th>
+              <th scope="col" class="fin-sup-th">
+                <button type="button" class="fin-sup-col-sort" data-fin-sup-sort="bestemming_naam">
+                  <span class="fin-sup-col-sort__text">Bestemming</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th">
+                <button type="button" class="fin-sup-col-sort" data-fin-sup-sort="leverancier">
+                  <span class="fin-sup-col-sort__text">Leverancier</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th text-end">
+                <button type="button" class="fin-sup-col-sort fin-sup-col-sort--end" data-fin-sup-sort="aantal_boekingen">
+                  <span class="fin-sup-col-sort__text">Boekingen</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th text-end">
+                <button type="button" class="fin-sup-col-sort fin-sup-col-sort--end" data-fin-sup-sort="aantal_reizigers">
+                  <span class="fin-sup-col-sort__text">Reizigers</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th text-end">
+                <button type="button" class="fin-sup-col-sort fin-sup-col-sort--end" data-fin-sup-sort="totale_omzet">
+                  <span class="fin-sup-col-sort__text">Totale omzet</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th text-end">
+                <button type="button" class="fin-sup-col-sort fin-sup-col-sort--end" data-fin-sup-sort="totale_winst">
+                  <span class="fin-sup-col-sort__text">Totale winst</span>
+                </button>
+              </th>
+              <th scope="col" class="fin-sup-th text-end">
+                <button type="button" class="fin-sup-col-sort fin-sup-col-sort--end" data-fin-sup-sort="winst_marge">
+                  <span class="fin-sup-col-sort__text">Winst marge</span>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="finSupTableBody">
+            <tr><td colspan="8" class="text-muted text-center py-4">Laden…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-2 border-top">
+        <div class="small text-muted" id="finSupPagerInfo">—</div>
+        <nav aria-label="Leveranciers paginatie">
+          <ul class="pagination pagination-sm mb-0" id="finSupPager">
+            <li class="page-item disabled" id="finSupPagePrev"><button class="page-link" type="button" id="finSupBtnPrev">Vorige</button></li>
+            <li class="page-item disabled" id="finSupPageNext"><button class="page-link" type="button" id="finSupBtnNext">Volgende</button></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="finSupDetailModal" tabindex="-1" aria-labelledby="finSupDetailModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header">
+          <h3 class="modal-title h6 mb-0" id="finSupDetailModalTitle">Accommodatiedetail</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body small" id="finSupDetailModalBody">—</div>
+      </div>
+    </div>
+  </div>
+</section>

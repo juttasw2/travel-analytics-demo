@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}Klantenprofiel · TravelAnalytics{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/klantenprofiel-page.css') }}?v=kp7" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms1" />
+{% endblock %}
+
+{% block content %}
+<div class="kp-page-root">
+<div class="container-fluid px-0 pb-4" id="kpPage">
+  <div class="kp-header mx-2 mb-2">
+    <h1 class="page-title">Klantenprofiel</h1>
+    <p class="page-subtitle mb-0 small">
+      Hier vind je een overzicht van de klanten die de boekingen maakt en krijg je inzicht in hun profiel.
+      <span class="text-muted">De filter land (reiziger) filtert op afkomst van de reiziger. De filter land (boeking) filtert op land van de brand.</span>
+    </p>
+  </div>
+
+  <div id="kpError" class="alert alert-danger mx-2 d-none" role="alert"></div>
+
+  <div id="kpFilterBar" class="vg-filter-strip kp-filter-bar mb-2 mx-2">
+    <div class="vg-filter-row vg-filter-row--primary">
+      <div class="vg-group vg-group--years">
+        <div class="vg-control">
+          <label class="vg-label" for="kpYear">Jaar (vertrek)</label>
+          <select id="kpYear" class="vg-input vg-input--year" aria-label="Kalenderjaar vertrekdatum"></select>
+        </div>
+      </div>
+      <div class="vg-control vg-control--brand">
+        <label class="vg-label" for="kpBrand">Merk</label>
+        <select id="kpBrand" class="vg-input">
+          <option value="__all__">Alle merken</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--destination">
+        <label class="vg-label" for="kpDest">Bestemming</label>
+        <select id="kpDest" class="vg-input" aria-label="Filter bestemming"></select>
+      </div>
+      <div class="vg-control">
+        <label class="vg-label" for="kpPeriod">Periode</label>
+        <select id="kpPeriod" class="vg-input">
+          <option value="all">Alle maanden (vertrekjaar)</option>
+          <option value="maand">Per maand (weergave)</option>
+          <option value="zomer">Zomer (jun–sept)</option>
+        </select>
+      </div>
+    </div>
+    <div class="d-flex flex-wrap align-items-end kp-filter-row-secondary">
+      <div class="vg-control vg-control--narrow">
+        <label class="vg-label vg-label--subtle" for="kpOrigin">Land reiziger</label>
+        <select id="kpOrigin" class="vg-input" aria-label="Filter land reiziger">
+          <option value="__ALL__">Alle landen</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--narrow">
+        <label class="vg-label vg-label--subtle" for="kpTravelerProvince">Provincie reiziger</label>
+        <select id="kpTravelerProvince" class="vg-input" aria-label="Filter provincie reiziger">
+          <option value="__ALL__">Alle provincies</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--narrow">
+        <label class="vg-label vg-label--subtle" for="kpTravelerAge">Leeftijd</label>
+        <select id="kpTravelerAge" class="vg-input" aria-label="Filter leeftijd reiziger">
+          <option value="__ALL__">Alle leeftijden</option>
+          <option value="15-">15-</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+          <option value="21+">21+</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--narrow">
+        <label class="vg-label vg-label--subtle" for="kpBrandLand">Land (boeking)</label>
+        <select id="kpBrandLand" class="vg-input" aria-label="Filter boekingsmarkt brand_land">
+          <option value="__ALL__">Alle</option>
+          <option value="BE">BE</option>
+          <option value="NL">NL</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+      <div class="vg-group vg-group--actions ms-auto">
+        <button type="button" id="kpApply" class="btn vg-btn-primary vg-btn">Toepassen</button>
+        <button type="button" id="kpReset" class="btn btn-outline-secondary vg-btn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="kpLoading" class="text-muted small mx-2 mb-2">Laden…</div>
+
+  <div id="kpDash" class="d-none mx-2">
+    <section aria-label="Kerngetallen">
+      <p class="small text-muted mb-1 px-0" id="kpFilterContextLine"></p>
+      <div class="row g-2" id="kpKpiRow"></div>
+    </section>
+
+    <!-- Sectie 2: Afkomst per brand_land (boeking) -->
+    <section class="card kp-section-card" id="kpTravelerOriginSection">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Boekingsmarkt</div>
+          <div class="info-popover-block">
+            <div class="info-popover-head">
+              <button
+                type="button"
+                class="info-popover-trigger"
+                data-info-popover-trigger="info-kp-origin-brand"
+                aria-label="Uitleg over afkomst reiziger per brand"
+              >
+                i
+              </button>
+              <h2 class="kp-section-title mb-0">Afkomst reizigers per brand</h2>
+            </div>
+            <div id="info-kp-origin-brand" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+              <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+              <p class="info-popover-text">
+                Deze grafiek toont per brand de verdeling van reizigers naar land van afkomst, op basis van de landcode van de reiziger. De percentages geven het aandeel BE, NL en Overig binnen de huidige filters en geselecteerde brand.
+              </p>
+            </div>
+          </div>
+          <p class="kp-section-desc mb-0">
+            Een cirkeldiagram per brand (BE / NL) binnen het geselecteerde merk (SB, MB, RB) hieronder.
+            De diagrammen tonen het % reizigers per afkomstland (BE / NL / overige) van de reiziger.
+          </p>
+        </div>
+        <div class="kp-donut-brand-bar" role="tablist" aria-label="Merk voor donutgrafieken">
+          <button type="button" class="kp-segment-btn is-active" data-kp-donut-brand="Sun Escapes">Sun Escapes</button>
+          <button type="button" class="kp-segment-btn" data-kp-donut-brand="Snow Escapes">Snow Escapes</button>
+          <button type="button" class="kp-segment-btn" data-kp-donut-brand="Road Rebels">Road Rebels</button>
+        </div>
+        <div id="kpTravelerOriginErr" class="alert alert-warning small d-none py-2 mb-2" role="status"></div>
+        <div class="row g-3">
+          <div class="col-12 col-lg-6">
+            <div class="border rounded-3 p-2 h-100">
+              <h3 class="h6 mb-2 text-muted" id="kpTravelerOriginTitle0">—</h3>
+              <div id="kpTravelerOriginEmpty0" class="small text-muted d-none mb-2" role="status"></div>
+              <div class="kp-chart-wrap kp-chart-wrap--donut"><canvas id="kpChartTravelerOrigin0" aria-label="Donut brand_land 1"></canvas></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6">
+            <div class="border rounded-3 p-2 h-100">
+              <h3 class="h6 mb-2 text-muted" id="kpTravelerOriginTitle1">—</h3>
+              <div id="kpTravelerOriginEmpty1" class="small text-muted d-none mb-2" role="status"></div>
+              <div class="kp-chart-wrap kp-chart-wrap--donut"><canvas id="kpChartTravelerOrigin1" aria-label="Donut brand_land 2"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 3: Demografie -->
+    <section class="card kp-section-card" id="kpLeeftijdDemografieSection">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Profiel</div>
+          <h2 class="kp-section-title">Leeftijd &amp; demografie</h2>
+          <p class="kp-section-desc">Leeftijd op van de reiziger op de vertekdatum. Alleen reizigers met bekende geboortedatum in de leeftijdstabel worden opgenomen.</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="kp-block-subtitle">Leeftijden</div>
+            <p class="kp-block-meta">Aantal reizigers per exacte leeftijd 14 t/m 20, plus een aparte groep 21+.</p>
+            <div class="kp-data-table-wrap">
+              <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableAgeBuckets">
+                <thead>
+                  <tr>
+                    <th data-sort="bucket">Leeftijd</th>
+                    <th class="text-end" data-sort="n">Pax</th>
+                    <th class="text-end" data-sort="pct">%</th>
+                    <th class="text-end" data-sort="delta_pct">Δ%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="small text-muted mt-1" id="kpAgeLargestSegment"></div>
+          </div>
+          <div class="col-lg-6">
+            <div class="kp-block-subtitle">Gemiddelde leeftijd per vertrekmaand</div>
+            <p class="kp-block-meta">Trendlijn voor leeftijd per vertrekmaand.</p>
+            <div class="kp-chart-wrap kp-chart-wrap--short">
+              <div class="kp-chart-scroll-wrap kp-chart-scroll-wrap--stacked" data-kp-trend="ageMonth" data-scroll-axis="x">
+                <div class="kp-chart-scroll-inner kp-chart-scroll-inner--h-wide">
+                  <p id="kpChartAgeByMonthEmpty" class="small text-muted d-none mb-0" role="status">Geen data beschikbaar</p>
+                  <canvas id="kpChartAgeByMonth"></canvas>
+                </div>
+                <div class="kp-chart-nav-row" aria-label="Navigatie leeftijd per maand">
+                  <button type="button" class="kp-chart-nav kp-chart-nav--prev" aria-label="Vorige maanden">‹</button>
+                  <button type="button" class="kp-chart-nav kp-chart-nav--next" aria-label="Volgende maanden">›</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 4: Herkomst -->
+    <section class="card kp-section-card" id="kpGroepsgrootteSection">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Geografie</div>
+          <h2 class="kp-section-title">Herkomst reizigers &amp; provincies</h2>
+          <p class="kp-section-desc">Afkomst = thuisland van de reiziger. Provincie = ingevulde provincie door de reiziger.</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="kp-block-subtitle">Top herkomst</div>
+            <p class="kp-block-meta">Pax per land binnen de filters op basis van het thuisland van de reiziger, dus niet op brandniveau.</p>
+            <div class="kp-data-table-wrap">
+              <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableOrigin">
+                <thead>
+                  <tr>
+                    <th data-sort="label">Herkomst</th>
+                    <th class="text-end" data-sort="pax">Pax</th>
+                    <th class="text-end" data-sort="pct">%</th>
+                    <th class="text-end" data-sort="delta_pct">Δ%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="kpOriginOtherDetail" class="kp-inline-detail d-none mt-2" role="region" aria-live="polite">
+              <div class="kp-inline-detail__title">Uitsplitsing Overig</div>
+              <ul id="kpOriginOtherDetailList" class="kp-inline-detail__list mb-0"></ul>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <details class="kp-nested-details">
+              <summary class="kp-nested-details__summary">
+                <span class="fw-semibold">Provincies / regio</span>
+                <span class="text-muted small ms-2">Pax of boekingen — klik om te openen</span>
+              </summary>
+              <div class="kp-nested-details__body">
+                <div class="btn-group btn-group-sm mb-2" role="group" aria-label="Weergave provincie">
+                  <button type="button" class="btn btn-outline-secondary active" id="kpProvPaxBtn">Pax</button>
+                  <button type="button" class="btn btn-outline-secondary" id="kpProvBookBtn">Boekingen</button>
+                </div>
+                <p class="kp-block-meta" id="kpProvMeta">Unieke boekingen met minst één reiziger uit die provincie.</p>
+                <div class="kp-data-table-wrap kp-data-table-wrap--compact">
+                  <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableProvince">
+                    <thead>
+                      <tr>
+                        <th data-sort="provincie">Provincie</th>
+                        <th class="text-end" data-sort="val">Aantal</th>
+                        <th class="text-end" data-sort="pct">%</th>
+                        <th class="text-end" data-sort="delta_pct">Δ%</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 5: Merk -->
+    <section class="card kp-section-card" id="kpRepeatSection">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Merken</div>
+          <h2 class="kp-section-title">Vergelijking per merk</h2>
+          <p class="kp-section-desc">Volume, gemiddelde leeftijd, gemiddelde groepsgrootte en aandeel per merk in de huidige selectie.</p>
+        </div>
+        <div class="kp-data-table-wrap">
+          <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableBrands">
+            <thead>
+              <tr>
+                <th data-sort="brand">Merk</th>
+                <th class="text-end" data-sort="pax">Pax</th>
+                <th class="text-end" data-sort="delta_pax">Δ pax</th>
+                <th class="text-end" data-sort="delta_pct">Δ %</th>
+                <th class="text-end" data-sort="avg_age">Gem. leeftijd</th>
+                <th class="text-end" data-sort="avg_group_size">Gem. groepsgrootte</th>
+                <th
+                  class="text-end"
+                  data-sort="brand_share_pct"
+                  title="Pax van dit merk als percentage van het totaal aantal pax in de huidige selectie (alle filters)."
+                >
+                  % v. totaal pax
+                </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 6: Groep -->
+    <section class="card kp-section-card">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Groepen</div>
+          <h2 class="kp-section-title">Groepsgrootte</h2>
+          <p class="kp-section-desc">Groepsgrootte per boeking. Groepering 1 t/m 9 personen afzonderlijk, daarna 10+.</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="kp-block-subtitle">Boekingen per groepsgrootte</div>
+            <div class="kp-data-table-wrap">
+              <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableGroupBuckets">
+                <thead>
+                  <tr>
+                    <th data-sort="bucket">Groepsgrootte</th>
+                    <th class="text-end" data-sort="n">Boekingen</th>
+                    <th class="text-end" data-sort="pct">%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="kp-block-subtitle">Gemiddelde groepsgrootte per vertrekmaand</div>
+            <p class="kp-block-meta">Gemiddeld aantal reizigers per boeking (gemiddelde over boekingen in die maand).</p>
+            <div class="kp-chart-wrap kp-chart-wrap--short">
+              <div class="kp-chart-scroll-wrap kp-chart-scroll-wrap--stacked" data-kp-trend="groupMonth" data-scroll-axis="x">
+                <div class="kp-chart-scroll-inner kp-chart-scroll-inner--h-wide">
+                  <p id="kpChartGroupMonthEmpty" class="small text-muted d-none mb-0" role="status">Geen data beschikbaar</p>
+                  <canvas id="kpChartGroupMonth"></canvas>
+                </div>
+                <div class="kp-chart-nav-row" aria-label="Navigatie groepsgrootte per maand">
+                  <button type="button" class="kp-chart-nav kp-chart-nav--prev" aria-label="Vorige maanden">‹</button>
+                  <button type="button" class="kp-chart-nav kp-chart-nav--next" aria-label="Volgende maanden">›</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 7: Loyaliteit -->
+    <section class="card kp-section-card">
+      <div class="card-body">
+        <div class="kp-section-head">
+          <div class="kp-section-kicker">Loyaliteit</div>
+          <div class="info-popover-block">
+            <div class="info-popover-head">
+              <button
+                type="button"
+                class="info-popover-trigger"
+                data-info-popover-trigger="info-kp-repeat-behavior"
+                aria-label="Uitleg over repeat-gedrag"
+              >
+                i
+              </button>
+              <h2 class="kp-section-title mb-0">Repeat-gedrag</h2>
+            </div>
+            <div
+              id="info-kp-repeat-behavior"
+              class="info-popover-panel"
+              data-info-popover-panel
+              role="dialog"
+              aria-label="Uitleg"
+            >
+              <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+              <p class="info-popover-text">
+                Repeat-klanten worden geïdentificeerd op combinatie van naam en geboortedatum, zodat dezelfde reiziger over meerdere boekingen heen herkend wordt. Dit blok toont de verhouding nieuw versus repeat en de verdeling per merk op basis van de volledige dataset.
+              </p>
+            </div>
+          </div>
+          <p class="kp-section-desc">Repeat = reiziger die eerder een boeking heeft gemaakt (repeat reiziger bepaalt obv naam + geboortedatum). Dit blok wordt altijd berekend op de volledige dataset (alle jaren, alle merken, alle bestemmingen).</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+          <button type="button" class="btn btn-outline-secondary" id="kpRepeatLoadBtn">Repeat gedrag laden</button>
+          <span id="kpRepeatLoading" class="small text-muted d-none" role="status">Repeat gedrag wordt geladen…</span>
+        </div>
+        <div id="kpRepeatErrorWrap" class="alert alert-warning py-2 px-3 d-none" role="alert">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <span id="kpRepeatErrorText">Repeat gedrag kon niet geladen worden</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="kpRepeatRetryBtn">Opnieuw proberen</button>
+          </div>
+        </div>
+        <div class="row g-3 align-items-start">
+          <div class="col-lg-5">
+            <div class="kp-block-subtitle">Repeat ratio: nieuw vs. repeat</div>
+            <p id="kpLoyaltyRepeatPct" class="small text-muted mb-1 d-none">—</p>
+            <p id="kpLoyaltyDeltaText" class="small text-muted mb-2">—</p>
+            <p id="kpLoyaltyPaxSplit" class="small mb-2">—</p>
+            <div class="kp-loyalty-donut-wrap position-relative">
+              <p id="kpLoyaltyDonutEmpty" class="small text-muted mb-0 d-none kp-loyalty-donut-empty" role="status"></p>
+              <canvas id="kpChartLoyaltyDonut" aria-label="Repeat donut"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="kp-block-subtitle">Repeat ratio per merk</div>
+            <p class="kp-block-meta">Repeat-pax per merk als aandeel van het <strong>totaal pax</strong> in de volledige dataset.</p>
+            <div class="kp-data-table-wrap">
+              <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableRepeatBrand">
+                <thead>
+                  <tr>
+                    <th data-sort="brand">Merk</th>
+                    <th
+                      class="text-end"
+                      data-sort="repeat_pct"
+                      title="Repeat-pax van dit merk gedeeld door totaal pax in de huidige selectie."
+                    >
+                      % v. totaal pax
+                    </th>
+                    <th class="text-end" data-sort="pax_repeat">Repeat-pax</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <details class="kp-nested-details mt-4">
+              <summary class="kp-nested-details__summary">
+                <span class="kp-block-subtitle mb-0 d-inline">Top repeat-klanten</span>
+                <span class="text-muted small ms-2">Klik om te openen</span>
+              </summary>
+              <div class="kp-nested-details__body">
+                <p class="kp-block-meta mb-2" id="kpRepeatTableIntro">Top 10 op basis van aantal boekingen in de volledige dataset. Klik op een naam om direct alle reizen te openen.</p>
+                <div class="table-responsive kp-repeat-table-wrap">
+                  <table class="table table-sm table-hover align-middle mb-0" id="kpLoyaltyRepeatTable">
+                    <thead>
+                      <tr>
+                        <th scope="col" data-sort="name_hint">Naam</th>
+                        <th scope="col" class="text-end" data-sort="trips_scope">Boekingen (scope)</th>
+                        <th scope="col" data-sort="last_vd">Laatste boeking</th>
+                        <th scope="col" class="text-end" data-sort="dest_count_scope">Bestemmingen (scope)</th>
+                        <th scope="col" class="text-end" data-sort="pax_scope">Pax (scope)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="kpLoyaltyRepeatTbody"></tbody>
+                  </table>
+                </div>
+                <div class="kp-pagination-nav" role="navigation" aria-label="Paginering repeat-klanten">
+                  <button type="button" class="kp-chart-nav kp-repeat-prev" id="kpRepeatPrev" aria-label="Vorige 10">‹</button>
+                  <span class="small text-muted" id="kpRepeatPageLabel">—</span>
+                  <button type="button" class="kp-chart-nav kp-repeat-next" id="kpRepeatNext" aria-label="Volgende 10">›</button>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sectie 8: Evolutie -->
+    <section class="card kp-section-card">
+      <div class="card-body">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+          <div>
+            <div class="kp-section-kicker">Trend</div>
+            <h2 class="kp-section-title mb-0">Pax over tijd</h2>
+            <p class="kp-block-meta mb-0">Totaal reizigers (pax) in de selectie, per kalendermaand of per week (vertrekdatum).</p>
+          </div>
+          <div class="kp-toggle-group" role="group" aria-label="Granulariteit">
+            <button type="button" class="is-active" id="kpPaxGranMonth" data-kp-pax-gran="month">Per maand</button>
+            <button type="button" id="kpPaxGranWeek" data-kp-pax-gran="week">Per week</button>
+          </div>
+        </div>
+        <div class="kp-chart-wrap kp-chart-wrap--wide">
+          <div class="kp-chart-scroll-wrap" data-kp-trend="pax" data-scroll-axis="x">
+            <button type="button" class="kp-chart-nav kp-chart-nav--prev" aria-label="Vorige periode">‹</button>
+            <div class="kp-chart-scroll-inner kp-chart-pax-inner">
+              <canvas id="kpChartPaxOverTime"></canvas>
+            </div>
+            <button type="button" class="kp-chart-nav kp-chart-nav--next" aria-label="Volgende periode">›</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scholen (optioneel) -->
+    <details class="card kp-section-card">
+      <summary class="card-body py-2 kp-card-summary">
+        <span class="fw-semibold">Scholen</span>
+        <span class="text-muted small ms-2">Concentratie &amp; toplijst</span>
+      </summary>
+      <div class="card-body border-top pt-2">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="kp-block-subtitle mb-1">Concentratie</div>
+            <ul class="list-unstyled mb-0 small" id="kpSchoolConc"></ul>
+          </div>
+          <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-end kp-school-filter-row">
+              <div class="kp-block-subtitle mb-0">Top scholen</div>
+              <div class="vg-control vg-control--narrow mb-0">
+                <label class="vg-label vg-label--subtle" for="kpSchoolProvinceFilter">Provincie</label>
+                <select id="kpSchoolProvinceFilter" class="vg-input" aria-label="Filter scholen op provincie">
+                  <option value="__ALL__">Alle provincies</option>
+                </select>
+              </div>
+            </div>
+            <p class="kp-block-meta small mb-2">Pax per schoolnaam en % t.o.v. totaal pax in deze selectie.</p>
+            <div class="kp-data-table-wrap kp-data-table-wrap--schools">
+              <table class="table table-sm table-hover kp-data-table mb-0" id="kpTableSchoolTop">
+                <thead>
+                  <tr>
+                    <th data-sort="school">School</th>
+                    <th class="text-end" data-sort="pax">Pax</th>
+                    <th class="text-end" data-sort="pct">%</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="kpLoyaltyDetailModal" tabindex="-1" aria-labelledby="kpLoyaltyDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="kpLoyaltyDetailModalLabel">Bestemmingshistoriek</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small text-muted mb-3" id="kpLoyaltyDetailIntro"></p>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr><th>Jaar</th><th>Bestemming</th><th>Accommodatie</th><th>Merk</th><th>Vertrek</th></tr>
+            </thead>
+            <tbody id="kpLoyaltyDetailTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/chart-trend-nav-shared.js') }}?v=1"></script>
+<script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms1"></script>
+<div
+  id="kpApiConfig"
+  class="d-none"
+  data-options-url="{{ url_for('dashboard.klantenprofiel_options') }}"
+  data-data-url="{{ url_for('dashboard.klantenprofiel_data') }}"
+  data-repeat-data-url="{{ url_for('dashboard.klantenprofiel_repeat_data') }}"
+  data-traveler-origin-donut-url="{{ url_for('dashboard.klantenprofiel_traveler_origin_donut_view') }}"
+></div>
+<script>
+  const kpApiConfigEl = document.getElementById("kpApiConfig");
+  window.__KP_API__ = {
+    options: (kpApiConfigEl && kpApiConfigEl.dataset && kpApiConfigEl.dataset.optionsUrl) || "",
+    data: (kpApiConfigEl && kpApiConfigEl.dataset && kpApiConfigEl.dataset.dataUrl) || "",
+    repeatData: (kpApiConfigEl && kpApiConfigEl.dataset && kpApiConfigEl.dataset.repeatDataUrl) || "",
+    travelerOriginDonut:
+      (kpApiConfigEl && kpApiConfigEl.dataset && kpApiConfigEl.dataset.travelerOriginDonutUrl) || "",
+  };
+</script>
+<script src="{{ url_for('static', filename='js/klantenprofiel.js') }}?v=kp202634"></script>
+{% endblock %}

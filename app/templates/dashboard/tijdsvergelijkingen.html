@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}Vergelijkingen · TravelAnalytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <div class="mb-3">
+    <h1 class="page-title">Vergelijkingen</h1>
+    <p class="page-subtitle">Zet twee jaartallen naast elkaar en lees meteen af wat stijgt, daalt en hoe de mix verschuift.</p>
+  </div>
+
+  <div class="vg-filter-strip mb-3">
+    <div class="vg-filter-row vg-filter-row--primary">
+      <div class="vg-group">
+        <div class="vg-control">
+          <label class="vg-label" for="vgDateType">Tijdsdimensie</label>
+          <select id="vgDateType" class="vg-input">
+            <option value="boekingsdatum" selected>Boekingsdatum</option>
+            <option value="vertrekdatum">Vertrekdatum</option>
+          </select>
+        </div>
+        <div class="vg-control">
+          <label class="vg-label" for="vgPeriod">Periode</label>
+          <select id="vgPeriod" class="vg-input">
+            <option value="week">Week</option>
+            <option value="maand" selected>Maand</option>
+            <option value="kwartaal">Kwartaal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="vg-group vg-group--years">
+        <div class="vg-control">
+          <label class="vg-label" for="vgCurrentYear"><span id="vgYearLabelPrimary">Primair jaar</span></label>
+          <select id="vgCurrentYear" class="vg-input vg-input--year" aria-describedby="vgYearLabelPrimary"></select>
+        </div>
+        <div class="vg-control">
+          <label class="vg-label" for="vgCompareYear"><span id="vgYearLabelRef">Referentiejaar</span></label>
+          <select id="vgCompareYear" class="vg-input vg-input--year" aria-describedby="vgYearLabelRef"></select>
+        </div>
+      </div>
+
+      <div class="vg-group vg-group--actions">
+        <button id="vgApplyBtn" type="button" class="btn vg-btn-primary vg-btn">Toepassen</button>
+        <button id="vgResetBtn" type="button" class="btn vg-btn-secondary vg-btn">Herstellen</button>
+      </div>
+    </div>
+
+    <div class="vg-filter-row vg-filter-row--secondary">
+      <div class="vg-control vg-control--brand">
+        <label class="vg-label" for="vgBrand">Merk</label>
+        <select id="vgBrand" class="vg-input">
+          <option value="__all__" selected>Alle merken</option>
+        </select>
+      </div>
+      <div class="vg-control vg-control--destination">
+        <label class="vg-label" for="vgBestemmingen">Bestemming</label>
+        <select id="vgBestemmingen" class="vg-input"></select>
+      </div>
+      <div class="vg-control vg-control--date">
+        <label class="vg-label" for="vgDateFrom">Van datum</label>
+        <input id="vgDateFrom" type="date" class="vg-input" />
+      </div>
+      <div class="vg-control vg-control--date">
+        <label class="vg-label" for="vgDateTo">Tot datum</label>
+        <input id="vgDateTo" type="date" class="vg-input" />
+      </div>
+    </div>
+  </div>
+
+  <div id="vgComparisonContext" class="vg-context mb-3 vg-context-bar">
+    <span id="vgComparisonContextText">Selecteer twee jaren en klik op Toepassen.</span>
+  </div>
+
+  <div id="vgError" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+  <div class="row g-2 mb-3">
+    <div class="col-12 col-md-3"><div class="card border-0 shadow-sm h-100 vg-flat-card"><div class="card-body p-3 vg-kpi-card"><div class="small text-muted fw-semibold">Pax</div><div id="vgKpiPaxCurrent" class="h3 fw-semibold mt-1 mb-1 vg-kpi-value">-</div><div id="vgKpiPaxCompare" class="small text-muted vg-kpi-ref">-</div><div id="vgKpiPaxDelta" class="small fw-semibold mt-2 vg-kpi-delta">-</div></div></div></div>
+    <div class="col-12 col-md-3"><div class="card border-0 shadow-sm h-100 vg-flat-card"><div class="card-body p-3 vg-kpi-card"><div class="small text-muted fw-semibold">Omzet</div><div id="vgKpiOmzetCurrent" class="h3 fw-semibold mt-1 mb-1 vg-kpi-value">-</div><div id="vgKpiOmzetCompare" class="small text-muted vg-kpi-ref">-</div><div id="vgKpiOmzetDelta" class="small fw-semibold mt-2 vg-kpi-delta">-</div></div></div></div>
+    <div class="col-12 col-md-3"><div class="card border-0 shadow-sm h-100 vg-flat-card"><div class="card-body p-3 vg-kpi-card"><div class="small text-muted fw-semibold">Gem. prijs</div><div id="vgKpiGemPrijsCurrent" class="h3 fw-semibold mt-1 mb-1 vg-kpi-value">-</div><div id="vgKpiGemPrijsCompare" class="small text-muted vg-kpi-ref">-</div><div id="vgKpiGemPrijsDelta" class="small fw-semibold mt-2 vg-kpi-delta">-</div></div></div></div>
+    <div class="col-12 col-md-3"><div class="card border-0 shadow-sm h-100 vg-flat-card"><div class="card-body p-3 vg-kpi-card"><div class="small text-muted fw-semibold">Boekingen</div><div id="vgKpiBoekingenCurrent" class="h3 fw-semibold mt-1 mb-1 vg-kpi-value">-</div><div id="vgKpiBoekingenCompare" class="small text-muted vg-kpi-ref">-</div><div id="vgKpiBoekingenDelta" class="small fw-semibold mt-2 vg-kpi-delta">-</div></div></div></div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm h-100 vg-flat-card">
+        <div class="card-body p-3">
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-2">
+            <div>
+              <div class="fw-semibold mb-1">Trend over de gekozen periode</div>
+              <div class="text-muted small" id="vgTrendSubtitle">Vergelijking tussen beide jaartallen binnen dezelfde periode-indeling.</div>
+            </div>
+            <div class="vg-control mb-0">
+              <label class="vg-label" for="vgTrendKpi">KPI (alleen deze grafiek)</label>
+              <select id="vgTrendKpi" class="vg-input">
+                <option value="pax" selected>Pax</option>
+                <option value="omzet">Omzet</option>
+                <option value="gem_prijs">Gem. prijs</option>
+                <option value="boekingen">Boekingen</option>
+              </select>
+            </div>
+          </div>
+          <div class="vg-trend-nav-wrap w-100 min-w-0">
+            <div class="vg-chart-wrap vg-chart-wrap--line">
+              <canvas id="vgTrendChart"></canvas>
+            </div>
+            <div
+              class="vg-trend-nav-footer d-flex align-items-center justify-content-center flex-wrap gap-2 mt-2"
+              role="group"
+              aria-label="Zichtbare periode trend"
+            >
+              <button
+                type="button"
+                class="vg-trend-icon-btn"
+                id="vgTrendScrollLeft"
+                disabled
+                aria-label="Vorige periodes op de trend"
+                title="Vorig venster"
+              >
+                ←
+              </button>
+              <span class="vg-trend-range-inline small text-muted text-center px-1" id="vgTrendRangeLabel" aria-live="polite"></span>
+              <button
+                type="button"
+                class="vg-trend-icon-btn"
+                id="vgTrendScrollRight"
+                disabled
+                aria-label="Volgende periodes op de trend"
+                title="Volgend venster"
+              >
+                →
+              </button>
+            </div>
+          </div>
+          <div id="vgTrendEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-3 mb-3 align-items-stretch vg-dash-pair-row">
+    <div class="col-12 col-xl-6 d-flex">
+      <div class="card border-0 shadow-sm w-100 vg-flat-card vg-dash-card">
+        <div class="card-body">
+          <div class="fw-semibold mb-1">Bestemmingen: pax t.o.v. referentiejaar</div>
+          <div class="text-muted small mb-2">Waar groeit of krimpt volume?</div>
+          <div class="table-responsive vg-data-table-wrap vg-table-scroll">
+            <table id="vgTableDestination" class="table table-sm vg-table-compact vg-data-table align-middle mb-0">
+              <thead id="vgDestinationDeltaHead"></thead>
+              <tbody id="vgDestinationDeltaBody"></tbody>
+            </table>
+          </div>
+          <div id="vgDestinationEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-6 d-flex">
+      <div class="card border-0 shadow-sm w-100 vg-flat-card vg-dash-card">
+        <div class="card-body">
+          <div class="fw-semibold mb-1">Doelgroepmix</div>
+          <div class="text-muted small mb-2">Pax per doelgroep vs referentiejaar.</div>
+          <div class="table-responsive vg-data-table-wrap vg-table-scroll">
+            <table id="vgTableDoelgroep" class="table table-sm vg-table-compact vg-data-table align-middle mb-0">
+              <thead id="vgDoelgroepHead"></thead>
+              <tbody id="vgDoelgroepBody"></tbody>
+            </table>
+          </div>
+          <div id="vgDoelgroepEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm h-100 vg-flat-card vg-country-card">
+        <div class="card-body">
+          <div class="fw-semibold mb-1 d-flex flex-wrap align-items-center gap-2">
+            <span>Landgroepen (BE / NL)</span>
+            <span class="d-inline-flex align-items-center gap-2 small text-muted fw-normal" aria-hidden="true">
+              <span class="text-nowrap"><span class="country-swatch country-swatch--be"></span>BE</span>
+              <span class="text-nowrap"><span class="country-swatch country-swatch--nl"></span>NL</span>
+            </span>
+          </div>
+          <p class="text-muted small mb-2 vg-country-desc">
+            Aandeel per landgroep (<span id="vgCountryCardY1">—</span>) + evolutie vs <span id="vgCountryCardY2">—</span>
+          </p>
+          <div class="vg-country-split">
+            <div class="vg-country-chart-col">
+              <div class="vg-chart-wrap vg-chart-wrap--donut-country">
+                <canvas id="vgCountryChart" aria-label="Verdeling reizigers per landgroep"></canvas>
+              </div>
+            </div>
+            <div class="vg-country-table-col">
+              <table id="vgTableCountry" class="table table-sm vg-table-compact vg-country-table vg-data-table align-middle mb-0">
+                <thead id="vgCountryMixHead"></thead>
+                <tbody id="vgCountryMixBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="vgCountryEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm h-100 vg-flat-card vg-dash-card">
+        <div class="card-body">
+          <div class="info-popover-block mb-1">
+            <div class="info-popover-head">
+              <button
+                type="button"
+                class="info-popover-trigger"
+                data-info-popover-trigger="info-vg-period-full-year"
+                aria-label="Uitleg over periodevergelijking per maand"
+              >
+                i
+              </button>
+              <div class="fw-semibold mb-0" id="vgPeriodCardTitle">Per maand</div>
+            </div>
+            <div id="info-vg-period-full-year" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+              <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+              <p class="info-popover-text">
+                Deze tabel vergelijkt de gekozen KPI per maand over het volledige kalenderjaar van het primaire jaar tegen het referentiejaar. Zo zie je seizoenseffecten en afwijkingen op maandniveau binnen dezelfde filtercontext.
+              </p>
+            </div>
+          </div>
+          <div class="text-muted small mb-2" id="vgPeriodCardSubtitle">—</div>
+          <div class="table-responsive vg-data-table-wrap vg-table-scroll">
+            <table id="vgTablePeriod" class="table table-sm vg-table-compact vg-data-table align-middle mb-0">
+              <thead id="vgPeriodCompareHead"></thead>
+              <tbody id="vgPeriodCompareBody"></tbody>
+            </table>
+          </div>
+          <div id="vgPeriodEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm h-100 vg-flat-card vg-dash-card">
+        <div class="card-body">
+          <div class="fw-semibold mb-1">Jaaroverzicht (2023 – huidig jaar)</div>
+          <div class="text-muted small mb-2">Zelfde merk/bestemming en tijdsdimensie als hierboven; kalenderjaren met boekings-/vertrekdata in bereik.</div>
+          <div class="table-responsive vg-data-table-wrap vg-table-scroll">
+            <table id="vgTableYearSummary" class="table table-sm vg-table-compact vg-data-table align-middle mb-0">
+              <thead id="vgYearSummaryHead"></thead>
+              <tbody id="vgYearSummaryBody"></tbody>
+            </table>
+          </div>
+          <div id="vgYearSummaryEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm h-100 vg-flat-card vg-dash-card">
+        <div class="card-body">
+          <div class="info-popover-block mb-1">
+            <div class="info-popover-head">
+              <button
+                type="button"
+                class="info-popover-trigger"
+                data-info-popover-trigger="info-vg-booking-tempo-week"
+                aria-label="Uitleg over boekingstempo cumulatief per week"
+              >
+                i
+              </button>
+              <div class="fw-semibold mb-0">Boekingstempo (cumulatief per week)</div>
+            </div>
+            <div id="info-vg-booking-tempo-week" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+              <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+              <p class="info-popover-text">
+                Deze grafiek toont de cumulatieve opbouw van pax per week en vergelijkt hoe snel beide jaren volume opbouwen. De steilheid van de curve laat zien in welke weken het boekingstempo versnelt of afvlakt.
+              </p>
+            </div>
+          </div>
+          <div class="text-muted small mb-2" id="vgTempoSubtitle">Hoe snel loopt pax-opbouw op in beide jaren?</div>
+          <div class="row g-2 mb-2">
+            <div class="col-12 col-md-6 col-xl-3">
+              <div class="vg-mini-stat">
+                <div class="small text-muted vg-lead-lbl-y1">Gem. voorloop (dagen)</div>
+                <div id="vgLeadCurrent" class="fw-semibold">-</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+              <div class="vg-mini-stat">
+                <div class="small text-muted vg-lead-lbl-y2">Gem. voorloop (dagen)</div>
+                <div id="vgLeadPrevious" class="fw-semibold">-</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+              <div class="vg-mini-stat">
+                <div class="small text-muted">Verschil voorloop</div>
+                <div id="vgLeadDelta" class="fw-semibold">-</div>
+              </div>
+            </div>
+          </div>
+          <div class="vg-chart-wrap vg-chart-wrap--line">
+            <canvas id="vgBookingTempoChart"></canvas>
+          </div>
+          <div id="vgTempoEmpty" class="vg-empty d-none">Geen gegevens beschikbaar voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="vgOverigModal" tabindex="-1" aria-labelledby="vgOverigModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vgOverigModalTitle">Overig — onderliggende landen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3" id="vgOverigModalContext"></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="fw-semibold mb-2" id="vgOverigModalY1">Primair jaar</div>
+              <div class="table-responsive vg-data-table-wrap">
+                <table class="table table-sm vg-data-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Land</th>
+                      <th class="text-end">Reizigers</th>
+                      <th class="text-end">Aandeel</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vgOverigModalBodyCurrent"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="fw-semibold mb-2" id="vgOverigModalY2">Referentiejaar</div>
+              <div class="table-responsive vg-data-table-wrap">
+                <table class="table table-sm vg-data-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Land</th>
+                      <th class="text-end">Reizigers</th>
+                      <th class="text-end">Aandeel</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vgOverigModalBodyCompare"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/multi-select-filter.css') }}?v=ms2" />
+{% endblock %}
+
+{% block extra_scripts %}
+  <div
+    id="tijdsvergelijkingenApiConfig"
+    class="d-none"
+    data-api-base="{{ url_for('dashboard.tijdsvergelijkingen') }}"
+  ></div>
+  <script>
+    const tijdsvergelijkingenApiConfigEl = document.getElementById("tijdsvergelijkingenApiConfig");
+    window.__TIJDSVERGELIJKINGEN_API_BASE__ =
+      (tijdsvergelijkingenApiConfigEl &&
+        tijdsvergelijkingenApiConfigEl.dataset &&
+        tijdsvergelijkingenApiConfigEl.dataset.apiBase) ||
+      "";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/multi-select-filter.js') }}?v=ms2"></script>
+  <script src="{{ url_for('static', filename='js/chart-trend-nav-shared.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tijdsvergelijkingen.js') }}?v=vg-2026-05-01-step2"></script>
+{% endblock %}
+

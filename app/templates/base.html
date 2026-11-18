@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}TravelAnalytics{% endblock %}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=ds3" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=ds4" />
+
+    {% block extra_head %}{% endblock %}
+  </head>
+
+  <body class="app-body">
+    <div class="d-flex min-vh-100">
+      <!-- Sidebar -->
+      <aside class="sidebar app-sidebar">
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-2">
+            <img
+              src="{{ url_for('static', filename='img/travel-analytics-logo.png') }}"
+              height="55"
+            />
+            <div>
+              <div class="brand-title">TravelAnalytics</div>
+              <div class="brand-subtitle">Prestaties &amp; inzicht</div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav-main">
+          {# Iconen: outline, stroke 2, Lucide-stijl #}
+          {% set nav_sections = [
+            {
+              'divider': false,
+              'heading': none,
+              'links': [
+                (
+                  'Overzicht',
+                  url_for('dashboard.overzicht'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
+                  none
+                ),
+                (
+                  'Bestemmingen & periodes',
+                  url_for('dashboard.bestemmingen'),
+                  '<span class="sidebar-icon-duo d-inline-flex align-items-center" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="9" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="9" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>',
+                  none
+                ),
+                (
+                  'Klantenprofiel',
+                  url_for('dashboard.klantenprofiel'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+                  none
+                ),
+                (
+                  'Boekingsgedrag',
+                  url_for('dashboard.dagtrends'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                  none
+                ),
+                (
+                  'Excursies',
+                  url_for('dashboard.excursies'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+                  none
+                ),
+                (
+                  'Financiën',
+                  url_for('dashboard.financieel'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg>',
+                  none
+                ),
+                (
+                  'Annulaties',
+                  url_for('dashboard.annulaties'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>',
+                  none
+                ),
+                (
+                  'Pre-boekingen',
+                  url_for('dashboard.pre_boekingen'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M9 14h6"/></svg>',
+                  none
+                ),
+                (
+                  'Vergelijkingen',
+                  url_for('dashboard.tijdsvergelijkingen'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>',
+                  none
+                ),
+                (
+                  'Inzichten',
+                  url_for('dashboard.inzichten'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>',
+                  none
+                )
+              ]
+            },
+            {
+              'divider': true,
+              'heading': 'Data',
+              'links': [
+                (
+                  'Uploaden',
+                  url_for('dashboard.upload'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>',
+                  none
+                ),
+                (
+                  'Alle boekingen',
+                  url_for('dashboard.data_verzameling'),
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>',
+                  '/data-verzameling'
+                )
+              ]
+            }
+          ] %}
+
+          {% for section in nav_sections %}
+            <div class="{{ 'sidebar-nav-divider' if section.divider else '' }}">
+              {% if section.heading %}
+                <div class="sidebar-nav-section-label">{{ section.heading }}</div>
+              {% endif %}
+              <ul class="list-unstyled mb-0">
+                {% for item in section.links %}
+                  {% set label = item[0] %}
+                  {% set href = item[1] %}
+                  {% set icon_html = item[2] %}
+                  {% set active_prefix = item[3] if (item | length) > 3 else none %}
+                  {% set hidden_for_role = is_versie_b and label in ['Financiën', 'Vergelijkingen', 'Inzichten'] %}
+                  {% if not hidden_for_role %}
+                  {% set is_active = href != '#' and (request.path.startswith(active_prefix) if active_prefix else request.path == href) %}
+                  <li class="mb-1">
+                    <a
+                      href="{{ href }}"
+                      class="sidebar-link d-flex align-items-center gap-2 {{ 'sidebar-link-active' if is_active else '' }}"
+                    >
+                      {% if icon_html %}
+                        <span class="sidebar-link-icon {% if 'sidebar-icon-duo' not in icon_html %}d-inline-flex align-items-center justify-content-center{% endif %}">
+                          {{ icon_html | safe }}
+                        </span>
+                      {% endif %}
+                      <span>{{ label }}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+        </nav>
+
+        {% if session.get('user_email') %}
+          <div class="mt-4 pt-3 border-top">
+            <form method="post" action="{{ url_for('dashboard.logout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Uitloggen</button>
+            </form>
+            <a
+              href="{{ url_for('dashboard.account_manage') }}"
+              class="btn btn-sm btn-outline-secondary w-100 mt-2 {{ 'active' if request.path.startswith('/account') else '' }}"
+            >
+              Account beheren
+            </a>
+          </div>
+        {% endif %}
+
+      </aside>
+
+      <!-- Content -->
+      <main class="flex-grow-1 app-main">
+        <section
+          id="appWarningBanner"
+          class="app-warning-banner d-none"
+          role="status"
+          aria-live="polite"
+          data-warning-banner
+          data-warning-storage-key="ta-warning-annulaties-v1"
+        >
+          <div class="app-warning-banner__content">
+            <p class="app-warning-banner__text mb-0">
+              Let op: In deze applicatie worden geannuleerde boekingen (met status 'dropped' of 'cancelled') automatisch uitgesloten van de data. Alle cijfers en analyses in de applicatie houden hier dus geen rekening mee, met uitzondering van de pagina Annulaties.
+            </p>
+            <button
+              type="button"
+              class="app-warning-banner__close"
+              aria-label="Waarschuwing sluiten"
+              data-warning-close
+            >
+              &times;
+            </button>
+          </div>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-3">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'warning' }} mb-2" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/date-format-nl.js') }}?v=date-nl-2"></script>
+    <script src="{{ url_for('static', filename='js/country-colors.js') }}?v=country-colors-1"></script>
+    <script src="{{ url_for('static', filename='js/chart-country-colors.js') }}?v=cc1"></script>
+    <script src="{{ url_for('static', filename='js/semantic-performance.js') }}?v=sp1"></script>
+    <script src="{{ url_for('static', filename='js/warning-banner.js') }}?v=wb2"></script>
+    <script src="{{ url_for('static', filename='js/info-icon-popover.js') }}?v=ip1"></script>
+    <script>
+      window.__RBAC__ = {
+        role: "{{ current_user_role }}",
+        isRestricted: {{ 'true' if is_versie_b else 'false' }},
+        currentYear: {{ rbac_current_year }},
+      };
+      if (window.__RBAC__.isRestricted) {
+        document.addEventListener("DOMContentLoaded", () => {
+          const currentYear = String(window.__RBAC__.currentYear);
+          const yearFields = document.querySelectorAll("select, input");
+          yearFields.forEach((el) => {
+            const key = `${el.id || ""} ${el.name || ""}`.toLowerCase();
+            if (!/(year|jaar)/.test(key)) return;
+            if (el.dataset && el.dataset.allowRbacYearChange === "true") return;
+            if (el.tagName === "SELECT") {
+              const hasValue = Array.from(el.options || []).some((opt) => String(opt.value) === currentYear);
+              if (!hasValue) {
+                const opt = document.createElement("option");
+                opt.value = currentYear;
+                opt.textContent = currentYear;
+                el.appendChild(opt);
+              }
+            }
+            el.value = currentYear;
+            el.disabled = true;
+          });
+        });
+      }
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

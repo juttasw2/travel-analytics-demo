@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Boekingsgedrag · TravelAnalytics{% endblock %}
+
+{% block content %}
+  <section class="bt-page" id="boekingentrendsPage">
+    <header class="mb-4">
+      <h1 class="page-title">Boekingsgedrag</h1>
+      <p class="page-subtitle mb-0">
+        Maandheatmap, boekingsvoorloop (lead time) en pax-tempo op basis van boekingsdatum.
+      </p>
+    </header>
+
+    <div id="btError" class="alert alert-danger d-none mb-4" role="alert"></div>
+
+    {# --- Heatmap --- #}
+    <section class="card bt-section border-0 shadow-sm mb-4" aria-labelledby="bt-heading-heatmap">
+      <div class="card-body p-4">
+        {% include "dashboard/boekingsgedrag/components/BoekingsgedragDayAnalysis.html" %}
+      </div>
+    </section>
+
+    {# --- Boekingstempo: pax tijdreeksen --- #}
+    <section class="card bt-section border-0 shadow-sm mb-4" aria-labelledby="bt-heading-tempo">
+      <div class="card-body p-4">
+        <div class="info-popover-block mb-1">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-bt-booking-speed"
+              aria-label="Uitleg over boekingstempo"
+            >
+              i
+            </button>
+            <h2 id="bt-heading-tempo" class="h5 mb-0">Boekingstempo</h2>
+          </div>
+          <div id="info-bt-booking-speed" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Deze grafiek toont het boekingsvolume per tijdsinterval op boekingsdatum en de cumulatieve opbouw binnen de gekozen periode. Zo analyseer je het instroompatroon van boekingen en de timing van piekmomenten.
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">Pax per gekozen tijdsinterval (op boekingsdatum), en cumulatief over de periode.</p>
+
+        <form class="bt-local-filters card border-0 shadow-none bt-local-filters--panel mb-4" action="#" method="get" onsubmit="return false;">
+          <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btTempoDateFrom" class="form-label small mb-1">Vanaf</label>
+                <input id="btTempoDateFrom" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btTempoDateTo" class="form-label small mb-1">Tot</label>
+                <input id="btTempoDateTo" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label for="btTempoDestination" class="form-label small mb-1">Bestemming</label>
+                <select id="btTempoDestination" class="form-select form-select-sm"></select>
+              </div>
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btTempoCountry" class="form-label small mb-1">Land</label>
+                <select id="btTempoCountry" class="form-select form-select-sm">
+                  <option value="__all__">Alle landen</option>
+                  <option value="BE">BE</option>
+                  <option value="NL">NL</option>
+                  <option value="IT">IT</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label for="btTempoBrand" class="form-label small mb-1">Brand</label>
+                <select id="btTempoBrand" class="form-select form-select-sm">
+                  <option value="__all__">Alle merken</option>
+                </select>
+              </div>
+              <div class="col-12 col-lg-auto ms-lg-auto d-flex flex-wrap gap-2 align-items-end">
+                <div class="bt-seg btn-group" role="group" aria-label="Aggregatie">
+                  <button id="btGranularityDay" type="button" class="btn btn-sm bt-seg__btn active">Per dag</button>
+                  <button id="btGranularityWeek" type="button" class="btn btn-sm bt-seg__btn">Per week</button>
+                  <button id="btGranularityMonth" type="button" class="btn btn-sm bt-seg__btn">Per maand</button>
+                </div>
+                <button id="btTempoReset" type="button" class="btn btn-outline-secondary btn-sm">Filters herstellen</button>
+                <button id="btTempoApply" type="button" class="btn btn-bt-accent btn-sm">Toepassen</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-4">
+            <div class="bt-kpi bt-kpi--accent card border-0 h-100">
+              <div class="card-body py-3">
+                <div class="small text-muted">Aantal boekingen gemaakt in de geselecteerde periode</div>
+                <div id="btKpiBookings" class="h4 mb-0 bt-kpi-highlight">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="bt-kpi bt-kpi--accent card border-0 h-100">
+              <div class="card-body py-3">
+                <div class="small text-muted">Aantal pax geboekt in de geselecteerde periode</div>
+                <div id="btKpiPaxPeriod" class="h4 mb-0 bt-kpi-highlight">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="bt-kpi bt-kpi--accent card border-0 h-100">
+              <div class="card-body py-3">
+                <div class="small text-muted">% pax vs zelfde periode vorig jaar</div>
+                <div id="btKpiDiff" class="h4 mb-0 bt-kpi-highlight">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h6 text-secondary mb-2">Pax geboekt in de periode</h3>
+        <div class="bt-chart-panel mb-2">
+          <div id="btTempoTrendEmpty" class="bt-chart-empty d-none" role="status">Geen pax-data voor deze selectie.</div>
+          <div class="bt-chart-wrap">
+            <canvas id="btTrendChart" aria-label="Pax per interval"></canvas>
+          </div>
+        </div>
+        <div
+          id="btTempoChartNav"
+          class="bt-tempo-chart-nav d-none align-items-center justify-content-between flex-wrap gap-2 mb-4"
+          role="navigation"
+          aria-label="Periode in grafiek (dag- of weekweergave)"
+        >
+          <button type="button" id="btTempoChartPrev" class="btn btn-sm btn-outline-secondary">
+            ← Vorige 3 maanden
+          </button>
+          <span id="btTempoChartNavLabel" class="small text-muted text-center flex-grow-1 px-2"></span>
+          <button type="button" id="btTempoChartNext" class="btn btn-sm btn-outline-secondary">
+            Volgende 3 maanden →
+          </button>
+        </div>
+
+        <h3 class="h6 text-secondary mb-2">Cumulatieve pax</h3>
+        <div class="bt-chart-panel">
+          <div id="btTempoCumulativeEmpty" class="bt-chart-empty d-none" role="status">Geen cumulatieve data voor deze selectie.</div>
+          <div class="bt-chart-wrap">
+            <canvas id="btCumulativeChart" aria-label="Cumulatieve pax"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# --- Lead time / boekingsvoorloop --- #}
+    <section class="card bt-section border-0 shadow-sm mb-4" aria-labelledby="bt-heading-lead">
+      <div class="card-body p-4">
+        <div class="info-popover-block mb-1">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-bt-leadtime"
+              aria-label="Uitleg over voorlooptijd"
+            >
+              i
+            </button>
+            <h2 id="bt-heading-lead" class="h5 mb-0">Analyse boekingsvoorloop</h2>
+          </div>
+          <div id="info-bt-leadtime" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Voorlooptijd (lead time) is het aantal dagen tussen boekingsdatum en vertrekdatum per dossier in de selectie. Deze weergave toont de verdeling van die waarden en maakt zichtbaar of de mix vooral vroegboekers of last-minute boekingen bevat.
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">Lead time = dagen tussen boekingsdatum en vertrekdatum. Verdeling over alle dossiers in de filter; ook gemiddelden per land.</p>
+
+        <form class="bt-local-filters card border-0 shadow-none bt-local-filters--panel mb-4" action="#" method="get" onsubmit="return false;">
+          <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btLeadDateFrom" class="form-label small mb-1">Vanaf</label>
+                <input id="btLeadDateFrom" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btLeadDateTo" class="form-label small mb-1">Tot</label>
+                <input id="btLeadDateTo" type="date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label for="btLeadDestination" class="form-label small mb-1">Bestemming</label>
+                <select id="btLeadDestination" class="form-select form-select-sm"></select>
+              </div>
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="btLeadCountry" class="form-label small mb-1">Land</label>
+                <select id="btLeadCountry" class="form-select form-select-sm">
+                  <option value="__all__">Alle landen</option>
+                  <option value="BE">BE</option>
+                  <option value="NL">NL</option>
+                  <option value="IT">IT</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label for="btLeadBrand" class="form-label small mb-1">Brand</label>
+                <select id="btLeadBrand" class="form-select form-select-sm">
+                  <option value="__all__">Alle merken</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-auto d-flex flex-wrap gap-2 align-items-end">
+                <button id="btLeadReset" type="button" class="btn btn-outline-secondary btn-sm">Filters herstellen</button>
+                <button id="btLeadApply" type="button" class="btn btn-bt-accent btn-sm">Toepassen</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-6">
+            <div class="bt-kpi bt-kpi--accent card border-0 h-100">
+              <div class="card-body py-3">
+                <div class="small text-muted d-flex align-items-center gap-1">
+                  <span class="country-swatch country-swatch--be" aria-hidden="true"></span>Gem. lead time BE
+                </div>
+                <div id="btLeadBe" class="h4 mb-0 bt-kpi-highlight">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="bt-kpi bt-kpi--accent card border-0 h-100">
+              <div class="card-body py-3">
+                <div class="small text-muted d-flex align-items-center gap-1">
+                  <span class="country-swatch country-swatch--nl" aria-hidden="true"></span>Gem. lead time NL
+                </div>
+                <div id="btLeadNl" class="h4 mb-0 bt-kpi-highlight">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="btLeadDistributionEmpty" class="bt-chart-empty d-none mb-3" role="status">Geen lead time-data (ontbrekende boekings- of vertrekdatum) voor deze selectie.</div>
+        <div class="table-responsive bt-data-table-wrap">
+          <table id="btLeadDistributionTable" class="table bt-data-table align-middle mb-0 d-none">
+            <thead>
+              <tr>
+                <th scope="col" data-sort="label" data-sort-type="text">Lead time</th>
+                <th scope="col" class="text-end" data-sort="count" data-sort-type="number">Boekingen</th>
+                <th scope="col" class="text-end" data-sort="pct" data-sort-type="number">%</th>
+                <th scope="col" class="bt-lead-distribution-col">Verdeling</th>
+              </tr>
+            </thead>
+            <tbody id="btLeadDistributionBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </section>
+{% endblock %}
+
+{% block extra_head %}
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+{% endblock %}
+
+{% block extra_scripts %}
+  <div
+    id="dagtrendsApiConfig"
+    class="d-none"
+    data-options-url="{{ url_for('dashboard.dagtrends_options') }}"
+    data-heatmap-url="{{ url_for('dashboard.dagtrends_heatmap_month') }}"
+    data-data-url="{{ url_for('dashboard.dagtrends_boekingentrends_data') }}"
+  ></div>
+  <script>
+    const dagtrendsApiConfigEl = document.getElementById("dagtrendsApiConfig");
+    window.__DAGTRENDS_API__ = {
+      options: (dagtrendsApiConfigEl && dagtrendsApiConfigEl.dataset && dagtrendsApiConfigEl.dataset.optionsUrl) || "",
+      heatmap: (dagtrendsApiConfigEl && dagtrendsApiConfigEl.dataset && dagtrendsApiConfigEl.dataset.heatmapUrl) || "",
+      data: (dagtrendsApiConfigEl && dagtrendsApiConfigEl.dataset && dagtrendsApiConfigEl.dataset.dataUrl) || "",
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/sortable-table.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dagtrends.js') }}"></script>
+{% endblock %}

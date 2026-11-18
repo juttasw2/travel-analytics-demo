@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Nieuw account aanmaken · TravelAnalytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+  <div class="mb-4">
+    <h1 class="page-title">Nieuw account aanmaken</h1>
+    <p class="page-subtitle">Maak een nieuw gebruikersaccount aan. De gebruiker stelt MFA in bij eerste login.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-lg-6 col-xl-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+          {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" id="create-user-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="mb-3">
+              <label for="display_name" class="form-label">Naam of gebruikersnaam</label>
+              <input
+                id="display_name"
+                name="display_name"
+                type="text"
+                class="form-control"
+                autocomplete="off"
+                required
+                maxlength="200"
+                value="{{ display_name or '' }}"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="form-control"
+                autocomplete="off"
+                required
+                value="{{ email or '' }}"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Wachtwoord</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="form-control"
+                autocomplete="new-password"
+                required
+                minlength="8"
+              />
+              <div class="form-text">Minimaal 8 tekens. Geef dit veilig door aan de gebruiker.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="role" class="form-label">Rol</label>
+              <select id="role" name="role" class="form-select" required>
+                <option value="" {% if not role %}selected{% endif %} disabled>Kies een rol…</option>
+                <option value="VERSIE_A" {% if role == 'VERSIE_A' %}selected{% endif %}>VERSIE_A (volledige toegang)</option>
+                <option value="VERSIE_B" {% if role == 'VERSIE_B' %}selected{% endif %}>VERSIE_B (beperkte toegang)</option>
+              </select>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" id="submit-btn" class="btn btn-primary">Account aanmaken</button>
+              <a href="{{ url_for('dashboard.account_manage') }}" class="btn btn-outline-secondary">Annuleren</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var form = document.getElementById("create-user-form");
+    var submitBtn = document.getElementById("submit-btn");
+    if (!form || !submitBtn) return;
+    form.addEventListener("submit", function () {
+      var emailInput = document.getElementById("email");
+      if (emailInput && typeof emailInput.value === "string") {
+        emailInput.value = emailInput.value.trim().toLowerCase();
+      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Bezig met aanmaken…";
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,435 @@
+{# Andere opbrengsten — volgorde: excursies, verzekeringen, explore, addons, annulaties #}
+<section class="finance-section card border-0 shadow-sm mb-4" id="finOtherRevenuesSection" data-finance-section="other-revenues">
+  <div class="card-body p-3 p-lg-4">
+    <h2 class="h5 fw-semibold mb-1">Andere opbrengsten</h2>
+    <p class="text-muted small mb-4">
+      Rendement op bijkomende opbrengsten (excursies, verzekeringen, enz.) binnen dezelfde filtercontext als de rest van Financiën.
+      Cijfers volgen de actieve filters: jaar, merk, bestemming, land en periode.
+    </p>
+
+    {# --- 1. Excursies --- #}
+    <article class="finance-oth-block card border mb-4 mb-lg-5">
+      <div class="card-body p-3 p-lg-4">
+        <div class="finance-oth-exc-head d-flex flex-column align-items-start gap-2 mb-3">
+          <div class="finance-oth-exc-head__text">
+            <h3 class="h6 fw-semibold mb-1">Opbrengsten uit excursies</h3>
+            <p class="text-muted small mb-0">
+              Omzet en winst op basis van excursieverkopen (zelfde bron als de Excursies-pagina); anders op boekingsniveau.
+            </p>
+          </div>
+          <div class="finance-oth-exc-head__info">
+            <div class="info-popover-block">
+              <div class="info-popover-head">
+                <button
+                  type="button"
+                  class="info-popover-trigger"
+                  data-info-popover-trigger="info-fin-revenue-excursions"
+                  aria-label="Uitleg over opbrengsten uit excursies"
+                >
+                  i
+                </button>
+              </div>
+              <div
+                id="info-fin-revenue-excursions"
+                class="info-popover-panel"
+                data-info-popover-panel
+                role="dialog"
+                aria-label="Uitleg"
+              >
+                <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+                <p class="info-popover-text">
+                  Deze opbrengsten worden afgeleid uit excursieregels: omzet en winst worden berekend als verkoop minus inkoop op regelniveau. De uitkomst volgt dezelfde filtercontext als de rest van Financiën, zodat vergelijkingen consistent blijven.
+                </p>
+              </div>
+            </div>
+            <span class="badge rounded-pill text-bg-light border small fw-normal d-none" id="finOthExcSourceBadge">—</span>
+          </div>
+        </div>
+
+        <div class="row g-2 g-md-3 mb-3 row-cols-2 row-cols-md-3 row-cols-xl-6">
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale omzet</div>
+              <div class="finance-kpi-value fs-6" id="finOthExcOmzet">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale winst</div>
+              <div class="finance-kpi-value fs-6 sp-text--pos" id="finOthExcWinst">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Gemiddelde commissie percentage</div>
+              <div class="finance-kpi-value fs-6" id="finOthExcMarge">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Verkochte excursies</div>
+              <div class="finance-kpi-value fs-6" id="finOthExcLines">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">% reizigers met excursie</div>
+              <div class="finance-kpi-value fs-6" id="finOthExcPctPax">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1" id="finOthExcPctPaxSub"></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Gem. excursie-uitgave p.p.</div>
+              <div class="finance-kpi-value fs-6" id="finOthExcAvgPaxSpend">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1">Totale excursie-omzet ÷ alle reizigers in selectie</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="small text-muted mb-2 d-none" id="finOthExcFallbackNote"></p>
+
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-2">
+          <div class="fw-semibold small mb-0">Top excursies op omzet</div>
+          <div class="d-flex align-items-center gap-2 flex-shrink-0">
+            <span class="small text-muted" id="finOthExcPageInfo"></span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Paginering excursies">
+              <button type="button" class="btn btn-outline-secondary px-2" id="finOthExcPagePrev" aria-label="Vorige">‹</button>
+              <button type="button" class="btn btn-outline-secondary px-2" id="finOthExcPageNext" aria-label="Volgende">›</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive rounded border bg-white finance-table-scroll">
+          <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finOthExcTopTable">
+            <thead class="table-light">
+              <tr>
+                <th data-sort="label" data-sort-type="text">Naam excursie – bestemming</th>
+                <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                <th class="text-end" data-sort="winst" data-sort-type="number">Winst</th>
+                <th class="text-end" data-sort="marge" data-sort-type="number">Marge</th>
+              </tr>
+            </thead>
+            <tbody id="finOthExcTopBody">
+              <tr><td colspan="4" class="text-muted text-center py-3">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    {# --- 2. Verzekeringen --- #}
+    <article class="finance-oth-block card border mb-4 mb-lg-5">
+      <div class="card-body p-3 p-lg-4">
+        <h3 class="h6 fw-semibold mb-1">Opbrengsten uit verzekeringen</h3>
+        <p class="text-muted small mb-3">
+          Zelfde bron als het tabblad Verzekeringen: prijzen per reiziger; winst met vaste marge (32%), consistent met het verzekeringen-overzicht.
+        </p>
+
+        <div class="row g-2 g-md-3 mb-3 row-cols-2 row-cols-md-3 row-cols-xl-6">
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale omzet</div>
+              <div class="finance-kpi-value fs-6" id="finOthInsOmzet">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale winst</div>
+              <div class="finance-kpi-value fs-6 sp-text--pos" id="finOthInsWinst">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Winstmarge</div>
+              <div class="finance-kpi-value fs-6" id="finOthInsMarge">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Verkopen (pax)</div>
+              <div class="finance-kpi-value fs-6" id="finOthInsSold">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1" id="finOthInsSoldSub"></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Boekingen</div>
+              <div class="finance-kpi-value fs-6" id="finOthInsBookings">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1" id="finOthInsBookingsSub"></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Gem. kost verzekering p.p.</div>
+              <div class="finance-kpi-value fs-6" id="finOthInsAvg">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1">Alleen reizigers mét verzekering</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fw-semibold small mb-2">Verdeling per verzekeringstype</div>
+        <div class="table-responsive rounded border bg-white finance-table-scroll">
+          <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finOthInsTypeTable">
+            <thead class="table-light">
+              <tr>
+                <th data-sort="label" data-sort-type="text">Type</th>
+                <th class="text-end" data-sort="rev" data-sort-type="number">Omzet</th>
+                <th class="text-end" data-sort="winst" data-sort-type="number">Winst (32%)</th>
+                <th class="text-end" data-sort="n" data-sort-type="number">Reizigers</th>
+                <th class="text-end" data-sort="share" data-sort-type="number">% totaal reizigers</th>
+              </tr>
+            </thead>
+            <tbody id="finOthInsTypeBody">
+              <tr><td colspan="5" class="text-muted text-center py-3">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    {# --- 3. Toeristentaks + schoonmaakkosten --- #}
+    <article class="finance-oth-block card border mb-4 mb-lg-5">
+      <div class="card-body p-3 p-lg-4">
+        <div class="info-popover-block mb-1">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-fin-revenue-tax-cleaning"
+              aria-label="Uitleg over opbrengsten uit toeristentaks en schoonmaakkosten"
+            >
+              i
+            </button>
+            <h3 class="h6 fw-semibold mb-0">INFORMATIEF: Opbrengsten uit toeristentaks en schoonmaakkosten</h3>
+          </div>
+          <div
+            id="info-fin-revenue-tax-cleaning"
+            class="info-popover-panel"
+            data-info-popover-panel
+            role="dialog"
+            aria-label="Uitleg"
+          >
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Dit blok toont klantdoorbelaste bedragen voor toeristentaks (per reiziger) en schoonmaakkosten (per boeking). Ze worden apart gerapporteerd omdat ze opbrengstcomponenten zijn die buiten de klassieke productmarge vallen.
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">
+          Opbrengsten die klanten betalen maar geen directe kost vormen in de winstformule: schoonmaakkosten (per boeking)
+          en toeristenbelasting (per reiziger), binnen dezelfde filters en statusregels als de rest van Financiën.
+        </p>
+
+        <div class="row g-3 mb-3 row-cols-1 row-cols-md-2 row-cols-xl-4">
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale schoonmaakkosten</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanTotalClean">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Boekingen met schoonmaakkosten</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanBookings">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Gem. schoonmaakkost per boeking</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanAvgClean">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Aandeel in totale winst (schoonmaak)</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanShareClean">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale toeristenbelasting</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanTotalTax">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Reizigers met toeristenbelasting</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanTravellers">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Gem. toeristenbelasting per reiziger</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanAvgTax">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Aandeel in totale winst (toeristentaks)</div>
+              <div class="finance-kpi-value fs-6" id="finOthTaxCleanShareTax">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-light border small mb-3 d-none" id="finOthTaxCleanEmptyState" role="status">
+          Geen opbrengsten uit toeristentaks of schoonmaakkosten gevonden voor de huidige filters.
+        </div>
+
+        <div class="fw-semibold small mb-2">Schoonmaakkosten per bestemming</div>
+        <div class="table-responsive rounded border bg-white finance-table-scroll mb-3">
+          <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finOthTaxCleanTableCleanByDest">
+            <thead class="table-light">
+              <tr>
+                <th data-sort="destination" data-sort-type="text">Bestemming</th>
+                <th class="text-end" data-sort="bookings" data-sort-type="number">Aantal boekingen</th>
+                <th class="text-end" data-sort="total" data-sort-type="number">Totale schoonmaakkosten</th>
+                <th class="text-end" data-sort="avg" data-sort-type="number">Gem. schoonmaakkost per boeking</th>
+                <th class="text-end" data-sort="share" data-sort-type="number">Aandeel in totale winst</th>
+              </tr>
+            </thead>
+            <tbody id="finOthTaxCleanBodyCleanByDest">
+              <tr><td colspan="5" class="text-muted text-center py-3">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fw-semibold small mb-2">Toeristenbelasting per bestemming</div>
+        <div class="table-responsive rounded border bg-white finance-table-scroll">
+          <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finOthTaxCleanTableTaxByDest">
+            <thead class="table-light">
+              <tr>
+                <th data-sort="destination" data-sort-type="text">Bestemming</th>
+                <th class="text-end" data-sort="travellers" data-sort-type="number">Aantal reizigers</th>
+                <th class="text-end" data-sort="total" data-sort-type="number">Totale toeristenbelasting</th>
+                <th class="text-end" data-sort="avg" data-sort-type="number">Gem. toeristenbelasting per reiziger</th>
+                <th class="text-end" data-sort="share" data-sort-type="number">Aandeel in totale winst</th>
+              </tr>
+            </thead>
+            <tbody id="finOthTaxCleanBodyTaxByDest">
+              <tr><td colspan="5" class="text-muted text-center py-3">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    {# --- 4. Opbrengsten uit Explore reizen (jouw verblijf in*) --- #}
+    <article class="finance-oth-block card border mb-4 mb-lg-5">
+      <div class="card-body p-3 p-lg-4">
+        <div class="info-popover-block mb-1">
+          <div class="info-popover-head">
+            <button
+              type="button"
+              class="info-popover-trigger"
+              data-info-popover-trigger="info-fin-revenue-explore"
+              aria-label="Uitleg over opbrengsten uit Explore reizen"
+            >
+              i
+            </button>
+            <h3 class="h6 fw-semibold mb-0">Opbrengsten uit Explore reizen</h3>
+          </div>
+          <div
+            id="info-fin-revenue-explore"
+            class="info-popover-panel"
+            data-info-popover-panel
+            role="dialog"
+            aria-label="Uitleg"
+          >
+            <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+            <p class="info-popover-text">
+              Explore-reizen worden geïdentificeerd op accommodatienamen die starten met "jouw verblijf in", met een handmatige kost die over reizigers verdeeld wordt. De gerapporteerde winst is omzet min deze toegewezen kost, rekening houdend met inbegrepen-statussen.
+            </p>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">
+          Voor accommodaties waarvan de naam start met <code>jouw verblijf in</code> kan je een kost op boekingsniveau ingeven.
+          Die kost wordt automatisch verdeeld over de reizigers en opgeslagen in <code>reiziger_financien.kost_accommodatie</code>;
+          zodra een rij <strong>Inbegrepen</strong> is telt de winst meteen mee in <strong>Winst uit boekingen</strong>.
+        </p>
+
+        <div class="row g-2 g-md-3 mb-3 row-cols-2 row-cols-md-3 row-cols-xl-6">
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale omzet</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvOmzet">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale ingegeven kost</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvKost">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Totale winst</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvWinst">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Winstmarge</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvMarge">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Relevante boekingen</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvCount">—</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="border rounded-3 finance-oth-kpi bg-light h-100 p-2 p-md-3">
+              <div class="finance-kpi-label">Nog uitgesloten</div>
+              <div class="finance-kpi-value fs-6" id="finOthJvExcluded">—</div>
+              <div class="finance-kpi-sub small text-muted mt-1">Kost = 0 bij status accepted/booked/closed</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive rounded border bg-white finance-table-scroll">
+          <table class="table table-sm mb-0 finance-table finance-table--analysis" id="finOthJvTable">
+            <thead class="table-light">
+              <tr>
+                <th data-sort="order" data-sort-type="text">Order</th>
+                <th data-sort="accommodatie" data-sort-type="text">Accommodatie</th>
+                <th class="text-end" data-sort="pax" data-sort-type="number">Reizigers</th>
+                <th class="text-end" data-sort="omzet" data-sort-type="number">Omzet</th>
+                <th class="text-end" data-sort="kost" data-sort-type="number">handmatige kosten p.p.</th>
+                <th class="text-end" data-sort="winstSort" data-sort-type="number">Winst</th>
+                <th data-sort="statusSort" data-sort-type="text">Status</th>
+              </tr>
+            </thead>
+            <tbody id="finOthJvBody">
+              <tr><td colspan="7" class="text-muted text-center py-3">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    {# --- 5. Addons --- #}
+    <article class="finance-oth-block card border mb-4 mb-lg-5 finance-oth-placeholder">
+      <div class="card-body p-3 p-lg-4">
+        <h3 class="h6 fw-semibold mb-1">Opbrengsten uit addons</h3>
+        <p class="text-muted small mb-3">Extra producten en services bovenop het basispakket.</p>
+        <div class="alert alert-light border small mb-0" role="status">
+          <span class="fw-semibold">Later verder uitwerken</span>
+          <span class="d-block mt-1 text-muted">Financiële opdeling en koppeling met boekingsdata volgen in een volgende iteratie.</span>
+        </div>
+      </div>
+    </article>
+
+    {# --- 6. Annulaties --- #}
+    <article class="finance-oth-block card border finance-oth-placeholder">
+      <div class="card-body p-3 p-lg-4">
+        <h3 class="h6 fw-semibold mb-1">Opbrengsten uit annulaties</h3>
+        <p class="text-muted small mb-3">Inzicht in opbrengsten en kosten rond annuleringen en voorwaarden.</p>
+        <div class="alert alert-light border small mb-0" role="status">
+          <span class="fw-semibold">Later verder uitwerken</span>
+          <span class="d-block mt-1 text-muted">Definitie van annulatie-opbrengsten en databron worden nog vastgelegd.</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

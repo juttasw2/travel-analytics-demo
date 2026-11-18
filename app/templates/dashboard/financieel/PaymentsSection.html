@@ -1,0 +1,184 @@
+{# PaymentsSection — herinneringen per reiziger (Voorschot vs Totaalbedrag) #}
+<section class="finance-section card border-0 shadow-sm mb-4" id="finPaymentsSection" data-finance-section="payments">
+  <div class="card-body p-3 p-lg-4">
+    <div class="info-popover-block mb-1">
+      <div class="info-popover-head">
+        <button
+          type="button"
+          class="info-popover-trigger"
+          data-info-popover-trigger="info-fin-payments"
+          aria-label="Uitleg over betalingen"
+        >
+          i
+        </button>
+        <h2 class="h5 fw-semibold mb-0">Betalingen</h2>
+      </div>
+      <div id="info-fin-payments" class="info-popover-panel" data-info-popover-panel role="dialog" aria-label="Uitleg">
+        <button type="button" class="info-popover-close" data-info-popover-close aria-label="Sluiten">&times;</button>
+        <p class="info-popover-text">
+          Deze sectie groepeert betalingen op reizigersniveau volgens herinneringsstatus voor voorschot en totaalbedrag. De problematische indicatoren isoleren alleen open of afwijkende betalingen volgens de toegepaste statusregels.
+        </p>
+      </div>
+    </div>
+    <p class="text-muted small mb-3">
+      Herinneringen per reiziger, met aparte telling voor <strong>Voorschot</strong> en <strong>Totaalbedrag</strong>.
+      Filters zijn gelijk aan de rest van de financiënpagina.
+    </p>
+
+    <div class="finance-kpi-section mb-4" id="financePaymentsKpiRoot" aria-label="Herinneringen per niveau">
+      <div class="row g-3 finance-kpi-row">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 finance-kpi-card finance-pay-rem-card">
+            <div class="card-body finance-pay-rem-card__body d-flex flex-column">
+              <div class="finance-kpi-label mb-2">0 herinneringen</div>
+              <div class="finance-pay-kpi-split d-flex flex-column gap-2">
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--voorschot">Voorschot</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem0Voorschot">—</span>
+                </div>
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--totaal">Totaalbedrag</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem0Totaal">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 finance-kpi-card finance-pay-rem-card">
+            <div class="card-body finance-pay-rem-card__body d-flex flex-column">
+              <div class="finance-kpi-label mb-2">1 herinnering</div>
+              <div class="finance-pay-kpi-split d-flex flex-column gap-2">
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--voorschot">Voorschot</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem1Voorschot">—</span>
+                </div>
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--totaal">Totaalbedrag</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem1Totaal">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 finance-kpi-card finance-pay-rem-card">
+            <div class="card-body finance-pay-rem-card__body d-flex flex-column">
+              <div class="finance-kpi-label mb-2">2 herinneringen</div>
+              <div class="finance-pay-kpi-split d-flex flex-column gap-2">
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--voorschot">Voorschot</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem2Voorschot">—</span>
+                </div>
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--totaal">Totaalbedrag</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem2Totaal">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 finance-kpi-card finance-pay-rem-card">
+            <div class="card-body finance-pay-rem-card__body d-flex flex-column">
+              <div class="finance-kpi-label mb-2">3 herinneringen</div>
+              <div class="finance-pay-kpi-split d-flex flex-column gap-2">
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--voorschot">Voorschot</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem3Voorschot">—</span>
+                </div>
+                <div class="finance-pay-kpi-line d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="finance-pay-tag finance-pay-tag--totaal">Totaalbedrag</span>
+                  <span class="finance-pay-kpi-stat" id="finPayKpiRem3Totaal">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 finance-kpi-row mt-1">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm h-100 finance-kpi-card finance-kpi-card--alert-soft">
+            <div class="card-body p-3">
+              <div class="finance-kpi-label">Problematische betalingen</div>
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 align-items-end mt-1">
+                <div class="col">
+                  <div class="small text-muted">Aantal boekingen</div>
+                  <div class="finance-kpi-value finance-kpi-value--red mb-0" id="finKpiProbCount">—</div>
+                </div>
+                <div class="col">
+                  <div class="small text-muted">% van selectie</div>
+                  <div class="finance-kpi-value finance-kpi-value--red mb-0" id="finKpiProbPct">—</div>
+                </div>
+                <div class="col">
+                  <div class="small text-muted">% van openstaande boekingen</div>
+                  <div class="finance-kpi-value finance-kpi-value--red mb-0" id="finKpiProbPctOpen">—</div>
+                </div>
+                <div class="col">
+                  <div class="small text-muted">Totaal openstaand (problematisch)</div>
+                  <div class="finance-kpi-value finance-kpi-value--red mb-0" id="finKpiProbOpen">—</div>
+                </div>
+              </div>
+              <div class="finance-kpi-compare small mt-2" id="finKpiProbCmp"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 finance-chart-row mb-4">
+      <div class="col-12 col-lg-6">
+        <div class="finance-chart-card h-100 d-flex flex-column">
+          <div class="fw-semibold mb-1">Voorschot – betaaltermijn op basis van herinneringen</div>
+          <p class="text-muted small mb-2">
+            Categorieën volgens aantal voorschot-herinneringen: 0 → 0–7 dagen na factuurdatum, 1 → 7–12 dagen, 2 → 12–17 dagen, 3+ → &gt;17 dagen.
+          </p>
+          <div class="finance-chart-wrap finance-chart-wrap--payments flex-grow-1">
+            <canvas id="finChartPayVoorschotTerm" aria-label="Voorschot herinneringen staafdiagram"></canvas>
+          </div>
+          <div class="finance-chart-empty text-muted small mt-2 d-none" id="finEmptyPayVoorschot">Geen gegevens voor deze selectie.</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="finance-chart-card h-100 d-flex flex-column">
+          <div class="fw-semibold mb-1">Totaalbedrag – betaaltermijn op basis van herinneringen</div>
+          <p class="text-muted small mb-2">
+            Categorieën volgens aantal totaalbedrag-herinneringen, vertaald naar termijn t.o.v. vertrek (zie legenda in tooltip).
+          </p>
+          <div class="finance-chart-wrap finance-chart-wrap--payments flex-grow-1">
+            <canvas id="finChartPayTotaalTerm" aria-label="Totaalbedrag herinneringen staafdiagram"></canvas>
+          </div>
+          <div class="finance-chart-empty text-muted small mt-2 d-none" id="finEmptyPayTotaal">Geen gegevens voor deze selectie.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="fw-semibold mb-2">Betalingen met opmerking</div>
+      <p class="text-muted small mb-2">
+        Alleen boekingen waar de betalingsstatus niet <strong>OKE</strong> is.
+        Uitgesloten: betalingsstatus <strong>GEANNULEERD</strong> of <strong>GEEN KOSTEN</strong>, en geannuleerde boekingen.
+      </p>
+      <div class="table-responsive finance-table-scroll">
+        <table class="table table-sm table-hover align-middle finance-table" id="finTableOutstanding">
+          <thead class="table-light">
+            <tr>
+              <th data-sort="booking" data-sort-type="text">Boeking</th>
+              <th data-sort="traveller" data-sort-type="text">Reiziger</th>
+              <th data-sort="ptype" data-sort-type="text">Type</th>
+              <th data-sort="status" data-sort-type="text">Betalingsstatus</th>
+              <th class="text-end" data-sort="bedrag" data-sort-type="number">Bedrag</th>
+              <th class="text-end" data-sort="open" data-sort-type="number">Openstaand</th>
+              <th data-sort="vertrek" data-sort-type="text">Vertrek</th>
+              <th data-sort="factuur" data-sort-type="text">Factuurdatum</th>
+            </tr>
+          </thead>
+          <tbody id="finTableOutstandingBody">
+            <tr><td colspan="8" class="text-muted text-center py-3">Geen gegevens voor deze selectie.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

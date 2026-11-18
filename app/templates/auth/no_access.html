@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Geen toestemming - TravelAnalytics</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body.no-access-page {
+        font-family: Inter, system-ui, sans-serif;
+        background: #ffffff;
+        color: #1e293b;
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+      .no-access-box {
+        max-width: 420px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="no-access-page">
+    <div class="no-access-box">
+      <p class="lead mb-2 fw-normal" style="font-size: 1.1rem; line-height: 1.5">
+        Momenteel heb je geen toestemming tot deze website
+      </p>
+      <p class="text-muted small mb-4">
+        Zodra je account is goedgekeurd, kun je opnieuw inloggen om het dashboard te openen.
+      </p>
+      <form method="post" action="{{ url_for('dashboard.logout') }}" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Uitloggen</button>
+      </form>
+    </div>
+  </body>
+</html>
